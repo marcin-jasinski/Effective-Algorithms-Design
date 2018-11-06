@@ -10,6 +10,7 @@
 #include <windows.h>
 
 int bestTotalCost;
+Array bestRoute;
 
 void calculateTotalRouteCost(Array numbers, int** edgesMatrix)
 {
@@ -26,24 +27,14 @@ void calculateTotalRouteCost(Array numbers, int** edgesMatrix)
 		int currentCity = numbers.get(i) - 1;
 		int nextOnRoute = numbers.get(i + 1) - 1;
 
-		// std::cout << "\nCost from " << currentCity + 1 << " to " << nextOnRoute + 1 << ": " << edgesMatrix[currentCity][nextOnRoute];
 		totalCost += edgesMatrix[currentCity][nextOnRoute];
 	}
-
-	//std::cout << "\nCost from " << lastCity << " to " << startingCity << ": " << edgesMatrix[lastCityIndex][startingCityIndex];
 	totalCost += edgesMatrix[lastCityIndex][startingCityIndex];
-
-	/*
-	std::cout << "\n Total cost for route ";
-	for (int i = 0; i < numbers.getSize(); i++)
-	{
-		std::cout << numbers.get(i) << " -> ";
-	}
-	std::cout << numbers[0] << " is " << totalCost << std::endl;*/
 
 	if (totalCost < bestTotalCost)
 	{
 		bestTotalCost = totalCost;
+		bestRoute = numbers;
 	}
 
 	return;
@@ -66,9 +57,9 @@ void permutate(Array numbers, int** edgesMatrix, unsigned int index)
 
 	for (int i = index; i < numbers.getSize(); i++)
 	{
-		swapElements(numbers, i, index);	//
-		permutate(numbers, edgesMatrix, index + 1);		//	swap elements -> go deeper into the array until you swap last 2 elemets -> rollback 
-		swapElements(numbers, i, index);	//
+		swapElements(numbers, i, index);	
+		permutate(numbers, edgesMatrix, index + 1);
+		swapElements(numbers, i, index);	
 	}
 }
 
@@ -96,19 +87,20 @@ double GetCounter()
 
 void bruteForce(int citiesNumber, int **edgesMatrix)
 {
-	// creating and filling number vector 
 	Array Numbers_array = Array();
 	for (int i = 1; i <= citiesNumber; i++) Numbers_array.pushBack(i);
 
 	double endTime;
 	bestTotalCost = INT32_MAX;
-	// function call
+	bestRoute = NULL;
+
 	std::cout << "\nProcessing, please wait... (if data set is large enough, you have really a lot of time now)" << std::endl;
 	StartCounter();
 	permutate(Numbers_array, edgesMatrix, 0);
 	endTime = GetCounter();
 	std::cout << "\n Elapsed time: " << endTime << " seconds." << std::endl;
-	std::cout << "\n Best route cost: " << bestTotalCost << std::endl;
+	std::cout << " Best route cost: " << bestTotalCost << std::endl;
+	std::cout << " Path: " << bestRoute << std::endl;
 	return;
 }
 
