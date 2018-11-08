@@ -6,11 +6,12 @@ private:
 
 	int treeLevel;
 	int cityNumber;
-	int estimatedLowerBound;
+	
+public:
 
+	int estimatedLowerBound;
 	int** reducedNodeMatrix;
 
-public:
 	Node();
 	Node(int**, int, int, int, int);
 	~Node();
@@ -19,5 +20,7 @@ public:
 	int getCityNumber();
 	int getEstimatedLowerBound();
 	int** getReducedNodeMatrix();
+
+	void setEstimatedLowerBound(int);
 };
 

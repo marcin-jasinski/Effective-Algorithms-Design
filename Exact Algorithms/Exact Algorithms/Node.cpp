@@ -40,6 +40,11 @@ int Node::getEstimatedLowerBound()
 	return this->estimatedLowerBound;
 }
 
+void Node::setEstimatedLowerBound(int lowerBound)
+{
+	this->estimatedLowerBound = lowerBound;
+}
+
 int** Node::getReducedNodeMatrix()
 {
 	return this->reducedNodeMatrix;
