@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "BranchAndBound.h"
+#include "Stopwatch.h"
 #include "Node.h"
 
 #include <iostream>
@@ -7,6 +8,9 @@
 #include <vector>
 #include <queue>
 #include <utility>
+#include <cstdlib>
+#include <ctime>
+#include <windows.h>
 
 struct nodeComparator
 {
@@ -27,6 +31,10 @@ void branchAndBound(int citiesNumber, int** edgesMatrix)
 
 	nodesQueue.push(rootNode);
 
+	double endTime = 0;
+	Stopwatch timer = Stopwatch();
+	timer.StartCounter();
+	timer.StartCounter();
 	while (!nodesQueue.empty())
 	{
 		Node minimalCostNode = nodesQueue.top();
@@ -35,7 +43,9 @@ void branchAndBound(int citiesNumber, int** edgesMatrix)
 		int currentCityNumber = minimalCostNode.getCityNumber();
 		if (minimalCostNode.getTreeLevel() == citiesNumber - 1)
 		{
-			std::cout << "Optimal path cost: " << minimalCostNode.getEstimatedLowerBound();
+			double endTime = timer.GetCounter();
+			std::cout << "\n Elapsed time: " << endTime << " seconds." << std::endl;
+			std::cout << " Best route cost: " << minimalCostNode.estimatedLowerBound << std::endl;
 			return;
 		}
 
@@ -46,6 +56,7 @@ void branchAndBound(int citiesNumber, int** edgesMatrix)
 				Node childNode = Node(minimalCostNode.reducedNodeMatrix, minimalCostNode.getTreeLevel() + 1, currentCityNumber, j, citiesNumber);
 
 				int childNodeLowerBound = minimalCostNode.getEstimatedLowerBound() + minimalCostNode.reducedNodeMatrix[currentCityNumber][j] + calculateLowerBound(childNode.reducedNodeMatrix, citiesNumber);
+				childNode.estimatedLowerBound = childNodeLowerBound;
 				nodesQueue.push(childNode);
 			}
 		}
@@ -123,6 +134,3 @@ int calculateLowerBound(int** nodeEdgesMatrix, int citiesNumber)
 
 	return lowerBound;
 }
-
-
-

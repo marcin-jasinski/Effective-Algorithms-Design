@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include "BruteForce.h"
+#include "Stopwatch.h"
 #include "Array.h"
 #include <cstdlib>
 #include <ctime>
@@ -11,10 +12,6 @@
 
 int bestTotalCost;
 Array bestRoute;
-
-LARGE_INTEGER li;
-double PCFreq = double(li.QuadPart) / 1000000.0;
-__int64 CounterStart = 0;
 
 void bruteForce(int citiesNumber, int **edgesMatrix)
 {
@@ -25,13 +22,12 @@ void bruteForce(int citiesNumber, int **edgesMatrix)
 	bestTotalCost = INT32_MAX;
 	bestRoute = NULL;
 
-	std::cout << "\nProcessing, please wait... (if data set is large enough, you have really a lot of time now)" << std::endl;
-	StartCounter();
+	Stopwatch timer = Stopwatch();
+	timer.StartCounter();
 	permutate(Numbers_array, edgesMatrix, 0);
-	endTime = GetCounter();
+	endTime = timer.GetCounter();
 	std::cout << "\n Elapsed time: " << endTime << " seconds." << std::endl;
 	std::cout << " Best route cost: " << bestTotalCost << std::endl;
-	std::cout << " Path: " << bestRoute << std::endl;
 	return;
 }
 
@@ -86,23 +82,6 @@ void calculateTotalRouteCost(Array numbers, int** edgesMatrix)
 	return;
 }
 
-void StartCounter()
-{
-	LARGE_INTEGER li;
-	if (!QueryPerformanceFrequency(&li)) std::cout << "QueryPerformanceFrequency failed!\n";
-
-	PCFreq = double(li.QuadPart);
-
-	QueryPerformanceCounter(&li);
-	CounterStart = li.QuadPart;
-}
-
-double GetCounter()
-{
-	LARGE_INTEGER li;
-	QueryPerformanceCounter(&li);
-	return double(li.QuadPart - CounterStart) / PCFreq;
-}
 
 
 
