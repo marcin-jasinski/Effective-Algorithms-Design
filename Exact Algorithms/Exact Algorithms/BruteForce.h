@@ -3,5 +3,5 @@
 
 void bruteForce(int, int**);
 void calculateTotalRouteCost(Array, int**);
-void swapElements(Array, int, int);
+void swap(Array, int, int);
 void permutate(Array, int**, unsigned int);

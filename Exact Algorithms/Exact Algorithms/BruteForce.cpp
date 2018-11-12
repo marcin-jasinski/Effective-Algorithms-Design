@@ -1,68 +1,70 @@
 #include "pch.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
 #include "BruteForce.h"
 #include "Stopwatch.h"
 #include "Array.h"
-#include <cstdlib>
+
 #include <ctime>
+#include <string>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <algorithm>
 #include <windows.h>
 
 int bestTotalCost;
 Array bestRoute;
 
+// This method starts the main brute force algorithm execution.
 void bruteForce(int citiesNumber, int **edgesMatrix)
 {
 	Array Numbers_array = Array();
 	for (int i = 1; i <= citiesNumber; i++) Numbers_array.pushBack(i);
 
-	double endTime;
 	bestTotalCost = INT32_MAX;
 	bestRoute = NULL;
 
-	Stopwatch timer = Stopwatch();
-	timer.StartCounter();
 	permutate(Numbers_array, edgesMatrix, 0);
-	endTime = timer.GetCounter();
-	std::cout << "\n Elapsed time: " << endTime << " seconds." << std::endl;
+	
+	std::cout << "=== Branch & Bound ===" << std::endl;
 	std::cout << " Best route cost: " << bestTotalCost << std::endl;
+	std::cout << " Optimal path:    " << bestRoute << std::endl;
+
 	return;
 }
 
+// This method generates all permutations of a given number set. 
+// For each permutation a total cost is calculated.
 void permutate(Array numbers, int** edgesMatrix, unsigned int index)
 {
 	if (index == numbers.getSize())
 	{
+		// Calculating total cost after generating complete permutation.
 		calculateTotalRouteCost(numbers, edgesMatrix);
 		return;
 	}
 
 	for (int i = index; i < numbers.getSize(); i++)
 	{
-		swapElements(numbers, i, index);
+		swap(numbers, i, index);
 		permutate(numbers, edgesMatrix, index + 1);
-		swapElements(numbers, i, index);
+		swap(numbers, i, index);
 	}
 }
 
-void swapElements(Array array, int indexA, int indexB)
+// This method is used to swap two elements in numbers array.
+void swap(Array array, int indexA, int indexB)
 {
 	int x = array.get(indexA);
 	array.replaceValueOnIndex(indexA, array.get(indexB));
 	array.replaceValueOnIndex(indexB, x);
 }
 
+// This method calcules and returns total cost of a path created from given vertices.
 void calculateTotalRouteCost(Array numbers, int** edgesMatrix)
 {
 	int totalCost = 0;
-
-	int startingCity = numbers.get(0);
-	int startingCityIndex = startingCity - 1;
-
-	int lastCity = numbers.get(numbers.getSize() - 1);
-	int lastCityIndex = lastCity - 1;
+	int startingCityIndex = numbers.get(0) - 1;
+	int lastCityIndex = numbers.get(numbers.getSize() - 1) - 1;
 
 	for (int i = 0; i < numbers.getSize() - 1; i++)
 	{
@@ -71,12 +73,17 @@ void calculateTotalRouteCost(Array numbers, int** edgesMatrix)
 
 		totalCost += edgesMatrix[currentCity][nextOnRoute];
 	}
+
+	// Adding cost of returning home from the last vertex
 	totalCost += edgesMatrix[lastCityIndex][startingCityIndex];
 
+	// Updating best found cost
 	if (totalCost < bestTotalCost)
 	{
 		bestTotalCost = totalCost;
-		bestRoute = numbers;
+		bestRoute = NULL;
+		for (int i = 0; i < numbers.getSize(); i++) bestRoute.pushBack(numbers.get(i) - 1);
+		bestRoute.pushBack(numbers.get(0) - 1);
 	}
 
 	return;
