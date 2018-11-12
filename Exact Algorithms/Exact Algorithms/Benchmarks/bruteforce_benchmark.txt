@@ -1,0 +1,36 @@
+
+Brute-force for 6 cities (ver. 1)
+0.000243917
+0.0064219
+0.000715893
+0.0039831
+
+Brute-force for 6 cities (ver. 2)
+0.000121203
+0.000114407
+0.000120826
+8.83539e-05
+
+Brute-force for 10 cities
+0.173133
+0.14936
+0.193518
+0.167674
+
+Brute-force for 12 cities
+17.6813
+17.1256
+16.9775
+16.9941
+
+Brute-force for 13 cities
+225.095
+224.092
+224.388
+234.69
+
+Brute-force for 14 cities
+3214.38
+3214.07
+3234.32
+3216.8

@@ -1,0 +1,36 @@
+
+Branch and bound for 6 cities (ver. 1)
+0.000376448
+0.000233723
+0.000236366
+0.000258643
+
+Branch and bound for 6 cities (ver. 2)
+0.000191811
+0.000171044
+0.000162737
+0.000135929
+
+Branch and bound for 10 cities
+0.0292546
+0.0339589
+0.0247436
+0.0233149
+
+Branch and bound for 12 cities
+1.18
+1.17693
+1.43098
+1.17179
+
+Branch and bound for 13 cities
+5.9462
+5.55297
+5.89602
+5.83354
+
+Branch and bound for 14 cities
+59.2896
+56.2346
+58.5233
+56.4219
