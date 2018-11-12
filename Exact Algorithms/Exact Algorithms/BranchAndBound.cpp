@@ -1,136 +1,153 @@
 #include "pch.h"
-#include "BranchAndBound.h"
 #include "Stopwatch.h"
 #include "Node.h"
 
 #include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
 #include <algorithm>
-#include <vector>
-#include <queue>
-#include <utility>
 #include <cstdlib>
 #include <ctime>
 #include <windows.h>
+#include <vector>
+#include <queue>
+#include <utility>
+#include <cstring>
+#include <climits>
 
-struct nodeComparator
+int* reduceMatrixRow(int** reducedMatrix, int citiesNumber)
 {
-	bool operator()(const Node& firstNode, const Node& secondNode) const
+	int* row = new int[citiesNumber];
+	for (int i = 0; i < citiesNumber; i++)
 	{
-		return firstNode.estimatedLowerBound > secondNode.estimatedLowerBound;
+		row[i] = INT_MAX;
+	}
+
+	// row[i] contains minimum in row i
+	for (int i = 0; i < citiesNumber; i++)
+		for (int j = 0; j < citiesNumber; j++)
+			if (reducedMatrix[i][j] < row[i])
+				row[i] = reducedMatrix[i][j];
+
+	// reduce the minimum value from each element in each row
+	for (int i = 0; i < citiesNumber; i++)
+		for (int j = 0; j < citiesNumber; j++)
+			if (reducedMatrix[i][j] != INT_MAX && row[i] != INT_MAX)
+				reducedMatrix[i][j] -= row[i];
+
+	return row;
+}
+
+int* reduceMatrixCol(int** reducedMatrix, int citiesNumber)
+{
+	int* col = new int[citiesNumber];
+	for (int i = 0; i < citiesNumber; i++)
+	{
+		col[i] = INT_MAX;
+	}
+
+	// col[j] contains minimum in col j
+	for (int i = 0; i < citiesNumber; i++)
+		for (int j = 0; j < citiesNumber; j++)
+			if (reducedMatrix[i][j] < col[j])
+				col[j] = reducedMatrix[i][j];
+
+	// reduce the minimum value from each element in each column
+	for (int i = 0; i < citiesNumber; i++)
+		for (int j = 0; j < citiesNumber; j++)
+			if (reducedMatrix[i][j] != INT_MAX && col[j] != INT_MAX)
+				reducedMatrix[i][j] -= col[j];
+
+	return col;
+}
+
+// Function to get the lower bound on
+// on the path starting at current min node
+int calculateCost(int** reducedMatrix, int citiesNumber)
+{
+	int cost = 0;
+	int* reductionRow = reduceMatrixRow(reducedMatrix,citiesNumber);
+	int* reductionCol = reduceMatrixCol(reducedMatrix, citiesNumber);
+
+	for (int i = 0; i < citiesNumber; i++)
+	{
+		cost += (reductionRow[i] != INT_MAX) ? reductionRow[i] : 0,
+		cost += (reductionCol[i] != INT_MAX) ? reductionCol[i] : 0;
+	}
+
+	delete[] reductionRow;
+	delete[] reductionCol;
+
+	return cost;
+}
+
+struct comp {
+	bool operator()(const Node* nodeA, const Node* nodeB) const
+	{
+		return nodeA->lowerBound > nodeB->lowerBound;
 	}
 };
 
-void branchAndBound(int citiesNumber, int** edgesMatrix)
+// Function to solve Traveling Salesman Problem using Branch and Bound
+int branchAndBound(int citiesNumber, int** costMatrix)
 {
-	std::priority_queue<Node, std::vector<Node>, nodeComparator> nodesQueue;
-	std::vector<std::pair<int, int>> v;
+	std::priority_queue<Node*, std::vector<Node*>, comp> pq;
+	std::vector<int> v;
 
-	Node rootNode = Node(edgesMatrix, 0, -1, 0, citiesNumber);
+	Node* root = new Node(costMatrix, v, 0, -1, 0, citiesNumber);
 
-	rootNode.estimatedLowerBound= calculateLowerBound(edgesMatrix, citiesNumber);
+	root->lowerBound = calculateCost(root->nodeMatrix, citiesNumber);
 
-	nodesQueue.push(rootNode);
+	// Add root to list of live nodes;
+	pq.push(root);
 
-	double endTime = 0;
-	Stopwatch timer = Stopwatch();
-	timer.StartCounter();
-	timer.StartCounter();
-	while (!nodesQueue.empty())
+	// Finds a live node with least cost, add its children to list of
+	// live nodes and finally deletes it from the list
+	while (!pq.empty())
 	{
-		Node minimalCostNode = nodesQueue.top();
-		nodesQueue.pop();
+		// Find a live node with least estimated cost
+		Node* min = pq.top();
 
-		int currentCityNumber = minimalCostNode.getCityNumber();
-		if (minimalCostNode.getTreeLevel() == citiesNumber - 1)
+		// The found node is deleted from the list of live nodes
+		pq.pop();
+
+		// i stores current city number
+		int i = min->currentCityNumber;
+
+		// if all cities are visited
+		if (min->graphLevel == citiesNumber - 1)
 		{
-			double endTime = timer.GetCounter();
-			std::cout << "\n Elapsed time: " << endTime << " seconds." << std::endl;
-			std::cout << " Best route cost: " << minimalCostNode.estimatedLowerBound << std::endl;
-			return;
+			// return to starting city
+			min->pathToVertex.push_back(0);
+
+			// return optimal cost
+			std::cout << "=== Branch & Bound ===" << std::endl;
+			std::cout << " Best route cost: " << min->lowerBound << std::endl;
+			std::cout << " Optimal path: ";
+
+			for (int i = min->pathToVertex.size() - 1; i >= 0; i--)
+			{
+				std::cout << min->pathToVertex[i] << " -> ";
+			}
+			std::cout << min->pathToVertex[min->pathToVertex.size() - 1] << std::endl;
+			
+			pq.empty();
+			return min->lowerBound;
 		}
 
 		for (int j = 0; j < citiesNumber; j++)
 		{
-			if (minimalCostNode.reducedNodeMatrix[currentCityNumber][j] != INT_MAX)
+			if (min->nodeMatrix[i][j] != INT_MAX)
 			{
-				Node childNode = Node(minimalCostNode.reducedNodeMatrix, minimalCostNode.getTreeLevel() + 1, currentCityNumber, j, citiesNumber);
-
-				int childNodeLowerBound = minimalCostNode.getEstimatedLowerBound() + minimalCostNode.reducedNodeMatrix[currentCityNumber][j] + calculateLowerBound(childNode.reducedNodeMatrix, citiesNumber);
-				childNode.estimatedLowerBound = childNodeLowerBound;
-				nodesQueue.push(childNode);
+				Node* child = new Node(min->nodeMatrix, min->pathToVertex, min->graphLevel+ 1, i, j, citiesNumber);
+				child->lowerBound = min->lowerBound + min->nodeMatrix[i][j] + calculateCost(child->nodeMatrix, citiesNumber);
+				pq.push(child);
 			}
 		}
-	}
-}
 
-int* reduceMatrixRow(int** nodeEdgesMatrix, int citiesNumber)
-{
-	int* reductionRow = new int[citiesNumber];
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		reductionRow[i] = INT_MAX;
+		delete min;
 	}
 
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		for (int j = 0; j < citiesNumber; j++)
-		{
-			if (nodeEdgesMatrix[i][j] < reductionRow[i]) reductionRow[i] = nodeEdgesMatrix[i][j];
-		}
-	}
-
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		for (int j = 0; j < citiesNumber; j++)
-		{
-			if (nodeEdgesMatrix[i][j] != INT_MAX && reductionRow[i] != INT_MAX) nodeEdgesMatrix[i][j] -= reductionRow[i];
-		}
-	}
-
-	return reductionRow;
-}
-
-int* reduceMatrixCol(int** nodeEdgesMatrix, int citiesNumber)
-{
-	int* reductionRow = new int[citiesNumber];
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		reductionRow[i] = INT_MAX;
-	}
-
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		for (int j = 0; j < citiesNumber; j++)
-		{
-			if (nodeEdgesMatrix[i][j] < reductionRow[j]) reductionRow[j] = nodeEdgesMatrix[i][j];
-		}
-	}
-
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		for (int j = 0; j < citiesNumber; j++)
-		{
-			if (nodeEdgesMatrix[i][j] != INT_MAX && reductionRow[j] != INT_MAX) nodeEdgesMatrix[i][j] -= reductionRow[j];
-		}
-	}
-
-	return reductionRow;
-}
-
-int calculateLowerBound(int** nodeEdgesMatrix, int citiesNumber)
-{
-	int lowerBound = 0;
-	int* rowReductor;
-	int* colReductor;
-
-	rowReductor = reduceMatrixRow(nodeEdgesMatrix, citiesNumber);
-	colReductor = reduceMatrixCol(nodeEdgesMatrix, citiesNumber);
-
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		if (rowReductor[i] != INT_MAX) lowerBound += rowReductor[i];
-		if (colReductor[i] != INT_MAX) lowerBound += colReductor[i];
-	}
-
-	return lowerBound;
+	return -1;
 }
