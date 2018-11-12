@@ -2,14 +2,13 @@
 #include "Stopwatch.h"
 #include <iostream>
 
-Stopwatch::Stopwatch()
-{
+Stopwatch::Stopwatch(){
 }
 
-Stopwatch::~Stopwatch()
-{
+Stopwatch::~Stopwatch(){
 }
 
+// This method starts the time counter
 void Stopwatch::StartCounter()
 {
 	LARGE_INTEGER li;
@@ -21,6 +20,8 @@ void Stopwatch::StartCounter()
 	CounterStart = li.QuadPart;
 }
 
+// This method gets and returns current time counter state.
+// Returned time will be in seconds.
 double Stopwatch::GetCounter()
 {
 	LARGE_INTEGER li;

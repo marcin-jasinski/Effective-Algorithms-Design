@@ -1,26 +1,20 @@
 #pragma once
+#include <vector>
 
+// This class represents a node in a graph used in Branch And Bound calculations.
 class Node
 {
-private:
-
-	int treeLevel;
-	int cityNumber;
-	
 public:
-
-	int estimatedLowerBound;
-	int** reducedNodeMatrix;
+	std::vector<int> pathToVertex;
+	int** nodeMatrix;
+	int lowerBound;
+	int currentCityNumber;
+	int graphLevel;
+	int citiesNumber;
 
 	Node();
-	Node(int**, int, int, int, int);
 	~Node();
 
-	int getTreeLevel();
-	int getCityNumber();
-	int getEstimatedLowerBound();
-	int** getReducedNodeMatrix();
-
-	void setEstimatedLowerBound(int);
+	Node(int **parentMatrix, std::vector<int> const &path, int level, int i, int j, int citiesNumber);
 };
 
