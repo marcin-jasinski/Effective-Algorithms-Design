@@ -20,56 +20,69 @@
 // This method starts the main B&B algorithm execution.
 int branchAndBound(int citiesNumber, int** costMatrix)
 {
+	double endTime;
+	Stopwatch timer = Stopwatch();
+	timer.StartCounter();
+
+	// Creating priority queue for nodes
 	std::priority_queue<Node*, std::vector<Node*>, comp> nodesPriorityQueue;
+
 	std::vector<int> pathToNode;
+	Node* startingNode = new Node(costMatrix, pathToNode, 0, 0, 0, citiesNumber);
 
-	Node* startingNode = new Node(costMatrix, pathToNode, 0, -1, 0, citiesNumber);
-
+	// Calculating lower bound and pushing node to priority queue
 	startingNode->lowerBound = calculateLowerBound(startingNode->nodeMatrix, citiesNumber);
-
 	nodesPriorityQueue.push(startingNode);
 
 	while (!nodesPriorityQueue.empty())
 	{
-		Node* min = nodesPriorityQueue.top();
+		Node* minimalCostNode = nodesPriorityQueue.top();
 		nodesPriorityQueue.pop();
 
-		int i = min->currentCityNumber;
+		int i = minimalCostNode->currentCityNumber;
 
-		if (min->graphLevel == citiesNumber - 1)
+		// If the end of the graph has been reached
+		if (minimalCostNode->graphLevel == citiesNumber - 1)
 		{
-			min->pathToVertex.push_back(0);
+			endTime = timer.GetCounter(); // stop timer
 
-			std::cout << "=== Branch & Bound ===" << std::endl;
-			std::cout << " Best route cost: " << min->lowerBound << std::endl;
+			minimalCostNode->pathToVertex.push_back(0);
+
+			std::cout << "\n=== Branch & Bound ===" << std::endl;
+			std::cout << " Best route cost: " << minimalCostNode->lowerBound << std::endl;
 			std::cout << " Optimal path: ";
 
-			for (int i = min->pathToVertex.size() - 1; i >= 0; i--)
+			std::cout << "[";
+			for (int i = minimalCostNode->pathToVertex.size() - 1; i >= 0; i--)
 			{
-				std::cout << min->pathToVertex[i] << " -> ";
+				std::cout << minimalCostNode->pathToVertex[i] << ",";
 			}
-			std::cout << min->pathToVertex[min->pathToVertex.size() - 1] << std::endl;
+			std::cout << minimalCostNode->pathToVertex[minimalCostNode->pathToVertex.size() - 1] << "]" << std::endl;
+			std::cout << " \nElapsed time: " << endTime << " seconds." << std::endl;
 
-			nodesPriorityQueue.empty();
-			return min->lowerBound;
+			return minimalCostNode->lowerBound;
 		}
 
+		// Creating child nodes for the current node.
 		for (int j = 0; j < citiesNumber; j++)
 		{
-			if (min->nodeMatrix[i][j] != INT_MAX)
+			if (minimalCostNode->nodeMatrix[i][j] != INT_MAX)
 			{
-				Node* child = new Node(min->nodeMatrix, min->pathToVertex, min->graphLevel + 1, i, j, citiesNumber);
-				child->lowerBound = min->lowerBound + min->nodeMatrix[i][j] + calculateLowerBound(child->nodeMatrix, citiesNumber);
+				Node* child = new Node(minimalCostNode->nodeMatrix, minimalCostNode->pathToVertex, minimalCostNode->graphLevel + 1, i, j, citiesNumber);
+
+				// Calculating lower bound for child node
+				child->lowerBound = minimalCostNode->lowerBound + minimalCostNode->nodeMatrix[i][j] + calculateLowerBound(child->nodeMatrix, citiesNumber);
 				nodesPriorityQueue.push(child);
 			}
 		}
 
-		delete min;
+		delete minimalCostNode;
 	}
 
 	return -1;
 }
 
+// This method performs matrix reduction using smallest values in each row
 int* reduceMatrixRow(int** reducedMatrix, int citiesNumber)
 {
 	int* reductionRow = new int[citiesNumber];
@@ -97,6 +110,7 @@ int* reduceMatrixRow(int** reducedMatrix, int citiesNumber)
 	return reductionRow;
 }
 
+// This method performs matrix reduction using smallest values in each column
 int* reduceMatrixCol(int** reducedMatrix, int citiesNumber)
 {
 	int* reductionCol = new int[citiesNumber];
@@ -124,6 +138,8 @@ int* reduceMatrixCol(int** reducedMatrix, int citiesNumber)
 	return reductionCol;
 }
 
+// This method calculates lower bound for a given node
+// using values from the reduction methods.
 int calculateLowerBound(int** reducedMatrix, int citiesNumber)
 {
 	int cost = 0;

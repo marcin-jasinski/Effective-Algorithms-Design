@@ -25,14 +25,6 @@ Node::Node(int** parentMatrix, std::vector<int> const & path, int level, int i, 
 	{
 		for (int j = 0; j < citiesNumber; j++)
 		{
-			this->nodeMatrix[i][j] = 0;
-		}
-	}
-
-	for (int i = 0; i < citiesNumber; i++)
-	{
-		for (int j = 0; j < citiesNumber; j++)
-		{
 			this->nodeMatrix[i][j] = parentMatrix[i][j];
 		}
 	}

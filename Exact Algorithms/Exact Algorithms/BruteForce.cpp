@@ -17,6 +17,10 @@ Array bestRoute;
 // This method starts the main brute force algorithm execution.
 void bruteForce(int citiesNumber, int **edgesMatrix)
 {
+	double endTime;
+	Stopwatch timer = Stopwatch();
+	timer.StartCounter();
+
 	Array Numbers_array = Array();
 	for (int i = 1; i <= citiesNumber; i++) Numbers_array.pushBack(i);
 
@@ -24,10 +28,12 @@ void bruteForce(int citiesNumber, int **edgesMatrix)
 	bestRoute = NULL;
 
 	permutate(Numbers_array, edgesMatrix, 0);
+	endTime = timer.GetCounter();
 	
-	std::cout << "=== Branch & Bound ===" << std::endl;
+	std::cout << "=== Brute force ===" << std::endl;
 	std::cout << " Best route cost: " << bestTotalCost << std::endl;
-	std::cout << " Optimal path:    " << bestRoute << std::endl;
+	std::cout << " Optimal path: " << bestRoute << std::endl;
+	std::cout << " Elapsed time: " << endTime << " seconds." << std::endl;
 
 	return;
 }
@@ -39,6 +45,8 @@ void permutate(Array numbers, int** edgesMatrix, unsigned int index)
 	if (index == numbers.getSize())
 	{
 		// Calculating total cost after generating complete permutation.
+		
+		//std::cout << numbers << std::endl;
 		calculateTotalRouteCost(numbers, edgesMatrix);
 		return;
 	}
