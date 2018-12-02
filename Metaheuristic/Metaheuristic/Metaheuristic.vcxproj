@@ -154,6 +154,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="SimulatedAnnealing.h" />
+    <ClInclude Include="TabuSearch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Metaheuristic.cpp" />
@@ -165,6 +166,7 @@
     </ClCompile>
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="SimulatedAnnealing.cpp" />
+    <ClCompile Include="TabuSearch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
