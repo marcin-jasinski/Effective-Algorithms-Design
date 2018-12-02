@@ -56,7 +56,10 @@ int getRouteCost(std::vector<int> permutation, int** edgesMatrix, int citiesNumb
 
 std::vector<int> simulatedAnnealing(double maxTemperature, double tempChange, int citiesNumber, int** edgesMatrix)
 {
-	std::srand(unsigned(std::time(0)));
+	std::random_device rd;
+	std::mt19937 mt(rd());
+	std::uniform_real_distribution<double> dist(0.0, 1.0);
+
 	std::vector<int> currentSolution = getRandomPermutation(citiesNumber);
 	int currentCost = getRouteCost(currentSolution, edgesMatrix, citiesNumber);
 
@@ -66,35 +69,20 @@ std::vector<int> simulatedAnnealing(double maxTemperature, double tempChange, in
 	int iteration = 1;
 	double temp = maxTemperature;
 	std::vector<int> nextNeighbour;
-
-	std::random_device rd;
-	std::mt19937 mt(rd());
-	std::uniform_real_distribution<double> dist(0.0, 1.0);
-
 	while (temp > epsilon)
-		{
-		
+	{	
 		currentCost = getRouteCost(currentSolution, edgesMatrix, citiesNumber);
 		bestCost = getRouteCost(bestSolution, edgesMatrix, citiesNumber);
-
-		//std::cout << "\nCurrent iteration: " << iteration << std::endl;
-		//std::cout << "Temperature:         " << temp << std::endl;
-		//std::cout << "Current cost:        " << currentCost << std::endl;
-		//std::cout << "Current bestCost:    " << bestCost << std::endl;
 
 		nextNeighbour = getNextNeighbour(currentSolution, citiesNumber);
 		int neighbourCost = getRouteCost(nextNeighbour, edgesMatrix, citiesNumber);
 
-		// std::cout << "Neighbour cost:      " << neighbourCost << std::endl;
-
 		if (neighbourCost <= currentCost)
 		{
 			currentSolution = nextNeighbour;
-			// std::cout << "Current cost updated!" << std::endl;
 			if (neighbourCost < bestCost)
 			{
 				bestSolution = nextNeighbour;
-				// std::cout << "Best cost updated!" << std::endl;
 			}
 		}
 		else
