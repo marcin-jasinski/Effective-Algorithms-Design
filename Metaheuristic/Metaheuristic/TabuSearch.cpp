@@ -7,6 +7,7 @@
 #include "TabuSearch.h"
 
 #define epsilon 0.0001
+std::vector<std::vector<int>> moves;
 
 std::vector<int> getRandomPermutationTabu(int citiesNumber)
 {
@@ -20,7 +21,6 @@ std::vector<int> getRandomPermutationTabu(int citiesNumber)
 
 std::vector<std::vector<int>> getNeighbourhood(std::vector<int> currentPermutation, int citiesNumber)
 {
-	int neighboursCount = (citiesNumber * citiesNumber) / 2;
 	int i = 1;
 	int begin = 0;
 	std::vector<std::vector<int>> neighbourhood;
@@ -29,9 +29,15 @@ std::vector<std::vector<int>> getNeighbourhood(std::vector<int> currentPermutati
 	{
 		for (int currentSwap = begin + 1; currentSwap < citiesNumber; currentSwap++)
 		{
+			std::vector<int> move;
+			move.push_back(begin);
+			move.push_back(currentSwap);
+
 			std::vector<int> nextNeighbour = currentPermutation;
 			std::swap(nextNeighbour.at(begin), nextNeighbour.at(currentSwap));
+
 			neighbourhood.push_back(nextNeighbour);
+			moves.push_back(move);
 		}
 		
 		begin++;
@@ -40,7 +46,7 @@ std::vector<std::vector<int>> getNeighbourhood(std::vector<int> currentPermutati
 	return neighbourhood;
 }
 
-int fitness(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
+int pathCost(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
 {
 	int totalCost = 0;
 	int startingCityIndex = permutation.at(0) - 1;
@@ -64,32 +70,68 @@ std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix)
 	std::vector<int> sBest = s0;
 	std::vector<int> bestCandidate = s0;
 
-	std::vector<std::vector<int>> tabuList;
-	tabuList.push_back(s0);
+	std::vector<int> sCandidate;
+	std::vector<int> moveToCandidate;
 
+	std::vector<std::vector<int>> sNeighbourhood;
+	std::vector<std::vector<int>> tabuList;
+	std::vector<int> moveToBePutOnTabuList; // czyNieZarezerwowanoCa³egoPrzedzia³uDlaPsa()
+
+	int iterationThreshold = 1000;
 	int iteration = 1;
-	while (iteration <= 100)
+	while (iteration <= 10000)
 	{
-		std::vector<std::vector<int>> sNeighbourhood = getNeighbourhood(bestCandidate, citiesNumber);
+		bool noAcceptedCandidates = true;
+		sNeighbourhood = getNeighbourhood(bestCandidate, citiesNumber);
 		for (int i = 0; i < sNeighbourhood.size(); i++)
 		{
-			std::vector<int> sCandidate = sNeighbourhood.at(i);
-			if (std::find(tabuList.begin(), tabuList.end(), sCandidate) == tabuList.end() //
-				&& fitness(sCandidate, edgesMatrix, citiesNumber) < fitness(bestCandidate, edgesMatrix, citiesNumber)) {
+			sCandidate = sNeighbourhood.at(i);
+			moveToCandidate = moves.at(i);
 
-				bestCandidate = sCandidate;
+			if (std::find(tabuList.begin(), tabuList.end(), moveToCandidate) != tabuList.end())
+			{
+				if (pathCost(sCandidate, edgesMatrix, citiesNumber) < pathCost(sBest, edgesMatrix, citiesNumber))
+				{
+					bestCandidate = sCandidate;
+					moveToBePutOnTabuList = moveToCandidate;
+					noAcceptedCandidates = false;
+				}
+			}
+			else
+			{
+				if (pathCost(sCandidate, edgesMatrix, citiesNumber) < pathCost(bestCandidate, edgesMatrix, citiesNumber))
+				{
+					noAcceptedCandidates = false;
+					bestCandidate = sCandidate;
+					moveToBePutOnTabuList = moveToCandidate;
+				}
 			}
 		}
 
-		if(fitness(bestCandidate, edgesMatrix, citiesNumber) < fitness(sBest, edgesMatrix, citiesNumber))
-		{
-			sBest = bestCandidate;
+		if (noAcceptedCandidates) {
+			iterationThreshold--;
 		}
 
-		tabuList.push_back(bestCandidate);
-		if (tabuList.size() > 7) tabuList.erase(tabuList.begin());
+		if (iterationThreshold <= 0)
+		{
+			sNeighbourhood.clear();
+			iterationThreshold = 10;
+			bestCandidate = getRandomPermutationTabu(citiesNumber);
+		}
+		else
+		{
+			if (pathCost(bestCandidate, edgesMatrix, citiesNumber) < pathCost(sBest, edgesMatrix, citiesNumber))
+			{
+				sBest = bestCandidate;
+			}
 
-		iteration++;
+			tabuList.push_back(moveToBePutOnTabuList);
+			if (tabuList.size() > 5 * citiesNumber) tabuList.erase(tabuList.begin());
+
+			iteration++;
+		}
+
+		moves.clear();
 	}
 
 	return sBest;
