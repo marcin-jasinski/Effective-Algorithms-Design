@@ -64,7 +64,7 @@ int pathCost(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
 	return totalCost;
 }
 
-std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix)
+std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNumber, int** edgesMatrix)
 {
 	std::vector<int> s0 = getRandomPermutationTabu(citiesNumber);
 	std::vector<int> sBest = s0;
@@ -77,9 +77,9 @@ std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix)
 	std::vector<std::vector<int>> tabuList;
 	std::vector<int> moveToBePutOnTabuList; // czyNieZarezerwowanoCa³egoPrzedzia³uDlaPsa()
 
-	int iterationThreshold = 1000;
+	int iterationThreshold = 25;
 	int iteration = 1;
-	while (iteration <= 10000)
+	while (iteration <= maxIterations)
 	{
 		bool noAcceptedCandidates = true;
 		sNeighbourhood = getNeighbourhood(bestCandidate, citiesNumber);
@@ -115,7 +115,7 @@ std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix)
 		if (iterationThreshold <= 0)
 		{
 			sNeighbourhood.clear();
-			iterationThreshold = 10;
+			iterationThreshold = 25;
 			bestCandidate = getRandomPermutationTabu(citiesNumber);
 		}
 		else
@@ -126,7 +126,7 @@ std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix)
 			}
 
 			tabuList.push_back(moveToBePutOnTabuList);
-			if (tabuList.size() > 5 * citiesNumber) tabuList.erase(tabuList.begin());
+			if (tabuList.size() > tabuMultiplier * citiesNumber) tabuList.erase(tabuList.begin());
 
 			iteration++;
 		}

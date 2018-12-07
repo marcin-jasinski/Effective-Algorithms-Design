@@ -4,4 +4,4 @@
 std::vector<int> getRandomPermutationTabu(int);
 int pathCost(std::vector<int>, int**, int);
 
-std::vector<int> tabuSearch(int citiesNumber, int** edgesMatrix);
+std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNumber, int** edgesMatrix);
