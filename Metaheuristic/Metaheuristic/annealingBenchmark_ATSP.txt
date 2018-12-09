@@ -1,0 +1,811 @@
+=== ATSP files benchmark (SA) ===
+
+Number of cities,17
+
+Temperature,200,cooling factor,0.99
+Average time,best solution,average error rate
+0.0105719,39,0
+
+Temperature,175,cooling factor,0.99
+Average time,best solution,average error rate
+0.00279931,41,0
+
+Temperature,150,cooling factor,0.99
+Average time,best solution,average error rate
+0.00276918,41,0
+
+Temperature,125,cooling factor,0.99
+Average time,best solution,average error rate
+0.00280256,39,0
+
+Temperature,100,cooling factor,0.99
+Average time,best solution,average error rate
+0.00264662,39,0
+
+Temperature,75,cooling factor,0.99
+Average time,best solution,average error rate
+0.00225771,39,0
+
+Temperature,50,cooling factor,0.99
+Average time,best solution,average error rate
+0.00295684,44,0
+
+Temperature,25,cooling factor,0.99
+Average time,best solution,average error rate
+0.00184509,40,0
+
+Temperature,200,cooling factor,0.999
+Average time,best solution,average error rate
+0.0298141,39,0
+
+Temperature,175,cooling factor,0.999
+Average time,best solution,average error rate
+0.0279069,39,0
+
+Temperature,150,cooling factor,0.999
+Average time,best solution,average error rate
+0.0236941,39,0
+
+Temperature,125,cooling factor,0.999
+Average time,best solution,average error rate
+0.0229821,39,0
+
+Temperature,100,cooling factor,0.999
+Average time,best solution,average error rate
+0.0233365,39,0
+
+Temperature,75,cooling factor,0.999
+Average time,best solution,average error rate
+0.020646,39,0
+
+Temperature,50,cooling factor,0.999
+Average time,best solution,average error rate
+0.0200611,39,0
+
+Temperature,25,cooling factor,0.999
+Average time,best solution,average error rate
+0.0172148,39,0
+
+Temperature,200,cooling factor,0.9999
+Average time,best solution,average error rate
+0.257071,39,0
+
+Temperature,175,cooling factor,0.9999
+Average time,best solution,average error rate
+0.267443,39,0
+
+Temperature,150,cooling factor,0.9999
+Average time,best solution,average error rate
+0.263502,39,0
+
+Temperature,125,cooling factor,0.9999
+Average time,best solution,average error rate
+0.246462,39,0
+
+Temperature,100,cooling factor,0.9999
+Average time,best solution,average error rate
+0.22945,39,0
+
+Temperature,75,cooling factor,0.9999
+Average time,best solution,average error rate
+0.201768,39,0
+
+Temperature,50,cooling factor,0.9999
+Average time,best solution,average error rate
+0.245243,39,0
+
+Temperature,25,cooling factor,0.9999
+Average time,best solution,average error rate
+0.16496,39,0
+
+Temperature,200,cooling factor,0.99999
+Average time,best solution,average error rate
+2.30472,39,0
+
+Temperature,175,cooling factor,0.99999
+Average time,best solution,average error rate
+2.23536,39,0
+
+Temperature,150,cooling factor,0.99999
+Average time,best solution,average error rate
+2.20906,39,0
+
+Temperature,125,cooling factor,0.99999
+Average time,best solution,average error rate
+2.15462,39,0
+
+Temperature,100,cooling factor,0.99999
+Average time,best solution,average error rate
+2.08807,39,0
+
+Temperature,75,cooling factor,0.99999
+Average time,best solution,average error rate
+2.00655,39,0
+
+Temperature,50,cooling factor,0.99999
+Average time,best solution,average error rate
+1.877,39,0
+
+Temperature,25,cooling factor,0.99999
+Average time,best solution,average error rate
+1.6701,39,0
+
+Temperature,200,cooling factor,0.999999
+Average time,best solution,average error rate
+23.0091,39,0
+
+Temperature,175,cooling factor,0.999999
+Average time,best solution,average error rate
+22.7207,39,0
+
+Temperature,150,cooling factor,0.999999
+Average time,best solution,average error rate
+22.0901,39,0
+
+Temperature,125,cooling factor,0.999999
+Average time,best solution,average error rate
+21.6189,39,0
+
+Temperature,100,cooling factor,0.999999
+Average time,best solution,average error rate
+20.8719,39,0
+
+Temperature,75,cooling factor,0.999999
+Average time,best solution,average error rate
+20.0254,39,0
+
+Temperature,50,cooling factor,0.999999
+Average time,best solution,average error rate
+18.7879,39,0
+
+Temperature,25,cooling factor,0.999999
+Average time,best solution,average error rate
+16.7428,39,0
+
+Number of cities,36
+
+Temperature,200,cooling factor,0.99
+Average time,best solution,average error rate
+0.00274177,2273,0
+
+Temperature,175,cooling factor,0.99
+Average time,best solution,average error rate
+0.00261497,2208,0
+
+Temperature,150,cooling factor,0.99
+Average time,best solution,average error rate
+0.0020366,2193,0
+
+Temperature,125,cooling factor,0.99
+Average time,best solution,average error rate
+0.00226911,2107,0
+
+Temperature,100,cooling factor,0.99
+Average time,best solution,average error rate
+0.00201077,2199,0
+
+Temperature,75,cooling factor,0.99
+Average time,best solution,average error rate
+0.0021288,2265,0
+
+Temperature,50,cooling factor,0.99
+Average time,best solution,average error rate
+0.00222312,2195,0
+
+Temperature,25,cooling factor,0.99
+Average time,best solution,average error rate
+0.0018577,2406,0
+
+Temperature,200,cooling factor,0.999
+Average time,best solution,average error rate
+0.0268621,1721,0
+
+Temperature,175,cooling factor,0.999
+Average time,best solution,average error rate
+0.0250486,1841,0
+
+Temperature,150,cooling factor,0.999
+Average time,best solution,average error rate
+0.0231564,1705,0
+
+Temperature,125,cooling factor,0.999
+Average time,best solution,average error rate
+0.0215442,1687,0
+
+Temperature,100,cooling factor,0.999
+Average time,best solution,average error rate
+0.0221234,1894,0
+
+Temperature,75,cooling factor,0.999
+Average time,best solution,average error rate
+0.0219686,1822,0
+
+Temperature,50,cooling factor,0.999
+Average time,best solution,average error rate
+0.021426,1775,0
+
+Temperature,25,cooling factor,0.999
+Average time,best solution,average error rate
+0.0190198,1744,0
+
+Temperature,200,cooling factor,0.9999
+Average time,best solution,average error rate
+0.234837,1579,0
+
+Temperature,175,cooling factor,0.9999
+Average time,best solution,average error rate
+0.237984,1597,0
+
+Temperature,150,cooling factor,0.9999
+Average time,best solution,average error rate
+0.227187,1613,0
+
+Temperature,125,cooling factor,0.9999
+Average time,best solution,average error rate
+0.227829,1540,0
+
+Temperature,100,cooling factor,0.9999
+Average time,best solution,average error rate
+0.22211,1668,0
+
+Temperature,75,cooling factor,0.9999
+Average time,best solution,average error rate
+0.207442,1665,0
+
+Temperature,50,cooling factor,0.9999
+Average time,best solution,average error rate
+0.195384,1596,0
+
+Temperature,25,cooling factor,0.9999
+Average time,best solution,average error rate
+0.18103,1685,0
+
+Temperature,200,cooling factor,0.99999
+Average time,best solution,average error rate
+2.36864,1531,0
+
+Temperature,175,cooling factor,0.99999
+Average time,best solution,average error rate
+2.3427,1596,0
+
+Temperature,150,cooling factor,0.99999
+Average time,best solution,average error rate
+2.29887,1520,0
+
+Temperature,125,cooling factor,0.99999
+Average time,best solution,average error rate
+2.24688,1509,0
+
+Temperature,100,cooling factor,0.99999
+Average time,best solution,average error rate
+2.17969,1513,0
+
+Temperature,75,cooling factor,0.99999
+Average time,best solution,average error rate
+2.07224,1523,0
+
+Temperature,50,cooling factor,0.99999
+Average time,best solution,average error rate
+1.9682,1558,0
+
+Temperature,25,cooling factor,0.99999
+Average time,best solution,average error rate
+1.73868,1527,0
+
+Temperature,200,cooling factor,0.999999
+Average time,best solution,average error rate
+23.8669,1492,0
+
+Temperature,175,cooling factor,0.999999
+Average time,best solution,average error rate
+23.4552,1510,0
+
+Temperature,150,cooling factor,0.999999
+Average time,best solution,average error rate
+22.9277,1498,0
+
+Temperature,125,cooling factor,0.999999
+Average time,best solution,average error rate
+22.3511,1503,0
+
+Temperature,100,cooling factor,0.999999
+Average time,best solution,average error rate
+21.6699,1508,0
+
+Temperature,75,cooling factor,0.999999
+Average time,best solution,average error rate
+20.843,1493,0
+
+Temperature,50,cooling factor,0.999999
+Average time,best solution,average error rate
+19.5706,1507,0
+
+Temperature,25,cooling factor,0.999999
+Average time,best solution,average error rate
+17.4539,1520,0
+
+Number of cities,65
+
+Temperature,200,cooling factor,0.99
+Average time,best solution,average error rate
+0.0027577,4218,0
+
+Temperature,175,cooling factor,0.99
+Average time,best solution,average error rate
+0.00222493,4517,0
+
+Temperature,150,cooling factor,0.99
+Average time,best solution,average error rate
+0.00209421,4241,0
+
+Temperature,125,cooling factor,0.99
+Average time,best solution,average error rate
+0.00229841,4096,0
+
+Temperature,100,cooling factor,0.99
+Average time,best solution,average error rate
+0.00233405,4332,0
+
+Temperature,75,cooling factor,0.99
+Average time,best solution,average error rate
+0.00220031,4649,0
+
+Temperature,50,cooling factor,0.99
+Average time,best solution,average error rate
+0.00187416,4373,0
+
+Temperature,25,cooling factor,0.99
+Average time,best solution,average error rate
+0.00198857,4468,0
+
+Temperature,200,cooling factor,0.999
+Average time,best solution,average error rate
+0.0243715,2808,0
+
+Temperature,175,cooling factor,0.999
+Average time,best solution,average error rate
+0.0263949,2876,0
+
+Temperature,150,cooling factor,0.999
+Average time,best solution,average error rate
+0.0242016,2966,0
+
+Temperature,125,cooling factor,0.999
+Average time,best solution,average error rate
+0.0231854,3041,0
+
+Temperature,100,cooling factor,0.999
+Average time,best solution,average error rate
+0.0231719,2910,0
+
+Temperature,75,cooling factor,0.999
+Average time,best solution,average error rate
+0.0215263,2911,0
+
+Temperature,50,cooling factor,0.999
+Average time,best solution,average error rate
+0.0224828,2872,0
+
+Temperature,25,cooling factor,0.999
+Average time,best solution,average error rate
+0.0180024,2899,0
+
+Temperature,200,cooling factor,0.9999
+Average time,best solution,average error rate
+0.253746,2496,0
+
+Temperature,175,cooling factor,0.9999
+Average time,best solution,average error rate
+0.245798,2371,0
+
+Temperature,150,cooling factor,0.9999
+Average time,best solution,average error rate
+0.245178,2267,0
+
+Temperature,125,cooling factor,0.9999
+Average time,best solution,average error rate
+0.233811,2394,0
+
+Temperature,100,cooling factor,0.9999
+Average time,best solution,average error rate
+0.221102,2399,0
+
+Temperature,75,cooling factor,0.9999
+Average time,best solution,average error rate
+0.222043,2345,0
+
+Temperature,50,cooling factor,0.9999
+Average time,best solution,average error rate
+0.209254,2439,0
+
+Temperature,25,cooling factor,0.9999
+Average time,best solution,average error rate
+0.178546,2302,0
+
+Temperature,200,cooling factor,0.99999
+Average time,best solution,average error rate
+2.53234,2094,0
+
+Temperature,175,cooling factor,0.99999
+Average time,best solution,average error rate
+2.48617,2135,0
+
+Temperature,150,cooling factor,0.99999
+Average time,best solution,average error rate
+2.3791,2067,0
+
+Temperature,125,cooling factor,0.99999
+Average time,best solution,average error rate
+2.33116,2109,0
+
+Temperature,100,cooling factor,0.99999
+Average time,best solution,average error rate
+2.27486,2169,0
+
+Temperature,75,cooling factor,0.99999
+Average time,best solution,average error rate
+2.20154,2237,0
+
+Temperature,50,cooling factor,0.99999
+Average time,best solution,average error rate
+2.05019,2120,0
+
+Temperature,25,cooling factor,0.99999
+Average time,best solution,average error rate
+1.78373,2131,0
+
+Temperature,200,cooling factor,0.999999
+Average time,best solution,average error rate
+25.0095,1962,0
+
+Temperature,175,cooling factor,0.999999
+Average time,best solution,average error rate
+24.3995,1999,0
+
+Temperature,150,cooling factor,0.999999
+Average time,best solution,average error rate
+24.0418,2007,0
+
+Temperature,125,cooling factor,0.999999
+Average time,best solution,average error rate
+23.4234,2062,0
+
+Temperature,100,cooling factor,0.999999
+Average time,best solution,average error rate
+22.7575,1957,0
+
+Temperature,75,cooling factor,0.999999
+Average time,best solution,average error rate
+21.735,1900,0
+
+Temperature,50,cooling factor,0.999999
+Average time,best solution,average error rate
+20.4294,1996,0
+
+Temperature,25,cooling factor,0.999999
+Average time,best solution,average error rate
+18.2162,1958,0
+
+Number of cities,100
+
+Temperature,200,cooling factor,0.99
+Average time,best solution,average error rate
+0.00297134,94490,0
+
+Temperature,175,cooling factor,0.99
+Average time,best solution,average error rate
+0.00264835,95681,0
+
+Temperature,150,cooling factor,0.99
+Average time,best solution,average error rate
+0.0026516,97188,0
+
+Temperature,125,cooling factor,0.99
+Average time,best solution,average error rate
+0.00242037,100143,0
+
+Temperature,100,cooling factor,0.99
+Average time,best solution,average error rate
+0.00270023,98172,0
+
+Temperature,75,cooling factor,0.99
+Average time,best solution,average error rate
+0.00248916,98340,0
+
+Temperature,50,cooling factor,0.99
+Average time,best solution,average error rate
+0.0022309,99521,0
+
+Temperature,25,cooling factor,0.99
+Average time,best solution,average error rate
+0.00187862,96504,0
+
+Temperature,200,cooling factor,0.999
+Average time,best solution,average error rate
+0.0284765,68740,0
+
+Temperature,175,cooling factor,0.999
+Average time,best solution,average error rate
+0.0269891,63735,0
+
+Temperature,150,cooling factor,0.999
+Average time,best solution,average error rate
+0.0245443,65799,0
+
+Temperature,125,cooling factor,0.999
+Average time,best solution,average error rate
+0.0268244,61613,0
+
+Temperature,100,cooling factor,0.999
+Average time,best solution,average error rate
+0.0243503,65016,0
+
+Temperature,75,cooling factor,0.999
+Average time,best solution,average error rate
+0.022575,65373,0
+
+Temperature,50,cooling factor,0.999
+Average time,best solution,average error rate
+0.0217423,63732,0
+
+Temperature,25,cooling factor,0.999
+Average time,best solution,average error rate
+0.019872,67753,0
+
+Temperature,200,cooling factor,0.9999
+Average time,best solution,average error rate
+0.269075,55810,0
+
+Temperature,175,cooling factor,0.9999
+Average time,best solution,average error rate
+0.284324,51817,0
+
+Temperature,150,cooling factor,0.9999
+Average time,best solution,average error rate
+0.276854,52798,0
+
+Temperature,125,cooling factor,0.9999
+Average time,best solution,average error rate
+0.256021,55645,0
+
+Temperature,100,cooling factor,0.9999
+Average time,best solution,average error rate
+0.255597,56238,0
+
+Temperature,75,cooling factor,0.9999
+Average time,best solution,average error rate
+0.243784,52450,0
+
+Temperature,50,cooling factor,0.9999
+Average time,best solution,average error rate
+0.232055,57550,0
+
+Temperature,25,cooling factor,0.9999
+Average time,best solution,average error rate
+0.196275,53503,0
+
+Temperature,200,cooling factor,0.99999
+Average time,best solution,average error rate
+2.73482,46348,0
+
+Temperature,175,cooling factor,0.99999
+Average time,best solution,average error rate
+2.68284,45105,0
+
+Temperature,150,cooling factor,0.99999
+Average time,best solution,average error rate
+2.67572,45855,0
+
+Temperature,125,cooling factor,0.99999
+Average time,best solution,average error rate
+2.55749,49432,0
+
+Temperature,100,cooling factor,0.99999
+Average time,best solution,average error rate
+2.4794,49963,0
+
+Temperature,75,cooling factor,0.99999
+Average time,best solution,average error rate
+2.38948,51739,0
+
+Temperature,50,cooling factor,0.99999
+Average time,best solution,average error rate
+2.17694,52353,0
+
+Temperature,25,cooling factor,0.99999
+Average time,best solution,average error rate
+1.92584,50620,0
+
+Temperature,200,cooling factor,0.999999
+Average time,best solution,average error rate
+26.5706,40178,0
+
+Temperature,175,cooling factor,0.999999
+Average time,best solution,average error rate
+26.0403,41641,0
+
+Temperature,150,cooling factor,0.999999
+Average time,best solution,average error rate
+25.3853,43492,0
+
+Temperature,125,cooling factor,0.999999
+Average time,best solution,average error rate
+24.8182,41599,0
+
+Temperature,100,cooling factor,0.999999
+Average time,best solution,average error rate
+24.0261,42348,0
+
+Temperature,75,cooling factor,0.999999
+Average time,best solution,average error rate
+23.0544,45010,0
+
+Temperature,50,cooling factor,0.999999
+Average time,best solution,average error rate
+21.6648,51233,0
+
+Temperature,25,cooling factor,0.999999
+Average time,best solution,average error rate
+19.3203,52548,0
+
+Number of cities,171
+
+Temperature,200,cooling factor,0.99
+Average time,best solution,average error rate
+0.00324176,15326,0
+
+Temperature,175,cooling factor,0.99
+Average time,best solution,average error rate
+0.00320604,15218,0
+
+Temperature,150,cooling factor,0.99
+Average time,best solution,average error rate
+0.00253357,15527,0
+
+Temperature,125,cooling factor,0.99
+Average time,best solution,average error rate
+0.00298108,14927,0
+
+Temperature,100,cooling factor,0.99
+Average time,best solution,average error rate
+0.0029736,15786,0
+
+Temperature,75,cooling factor,0.99
+Average time,best solution,average error rate
+0.00295759,15875,0
+
+Temperature,50,cooling factor,0.99
+Average time,best solution,average error rate
+0.00244891,15756,0
+
+Temperature,25,cooling factor,0.99
+Average time,best solution,average error rate
+0.00195678,15563,0
+
+Temperature,200,cooling factor,0.999
+Average time,best solution,average error rate
+0.0308291,9333,0
+
+Temperature,175,cooling factor,0.999
+Average time,best solution,average error rate
+0.0302337,8771,0
+
+Temperature,150,cooling factor,0.999
+Average time,best solution,average error rate
+0.0256293,9432,0
+
+Temperature,125,cooling factor,0.999
+Average time,best solution,average error rate
+0.0270408,9323,0
+
+Temperature,100,cooling factor,0.999
+Average time,best solution,average error rate
+0.0267379,9227,0
+
+Temperature,75,cooling factor,0.999
+Average time,best solution,average error rate
+0.0261426,9239,0
+
+Temperature,50,cooling factor,0.999
+Average time,best solution,average error rate
+0.0259415,9645,0
+
+Temperature,25,cooling factor,0.999
+Average time,best solution,average error rate
+0.0230191,10084,0
+
+Temperature,200,cooling factor,0.9999
+Average time,best solution,average error rate
+0.299556,6130,0
+
+Temperature,175,cooling factor,0.9999
+Average time,best solution,average error rate
+0.291285,5884,0
+
+Temperature,150,cooling factor,0.9999
+Average time,best solution,average error rate
+0.273969,6039,0
+
+Temperature,125,cooling factor,0.9999
+Average time,best solution,average error rate
+0.272492,5755,0
+
+Temperature,100,cooling factor,0.9999
+Average time,best solution,average error rate
+0.258807,5960,0
+
+Temperature,75,cooling factor,0.9999
+Average time,best solution,average error rate
+0.243874,5859,0
+
+Temperature,50,cooling factor,0.9999
+Average time,best solution,average error rate
+0.238364,5789,0
+
+Temperature,25,cooling factor,0.9999
+Average time,best solution,average error rate
+0.212699,6199,0
+
+Temperature,200,cooling factor,0.99999
+Average time,best solution,average error rate
+2.94352,4475,0
+
+Temperature,175,cooling factor,0.99999
+Average time,best solution,average error rate
+2.96402,4596,0
+
+Temperature,150,cooling factor,0.99999
+Average time,best solution,average error rate
+2.82854,4627,0
+
+Temperature,125,cooling factor,0.99999
+Average time,best solution,average error rate
+2.76062,4217,0
+
+Temperature,100,cooling factor,0.99999
+Average time,best solution,average error rate
+2.65132,4457,0
+
+Temperature,75,cooling factor,0.99999
+Average time,best solution,average error rate
+2.53931,4617,0
+
+Temperature,50,cooling factor,0.99999
+Average time,best solution,average error rate
+2.36642,4399,0
+
+Temperature,25,cooling factor,0.99999
+Average time,best solution,average error rate
+2.14147,4385,0
+
+Temperature,200,cooling factor,0.999999
+Average time,best solution,average error rate
+29.2773,3897,0
+
+Temperature,175,cooling factor,0.999999
+Average time,best solution,average error rate
+28.7929,3696,0
+
+Temperature,150,cooling factor,0.999999
+Average time,best solution,average error rate
+28.2849,3717,0
+
+Temperature,125,cooling factor,0.999999
+Average time,best solution,average error rate
+27.5193,3708,0
+
+Temperature,100,cooling factor,0.999999
+Average time,best solution,average error rate
+26.7805,3863,0
+
+Temperature,75,cooling factor,0.999999
+Average time,best solution,average error rate
+27.4007,3786,0
+
+Temperature,50,cooling factor,0.999999
+Average time,best solution,average error rate
+24.2613,3803,0
+
+Temperature,25,cooling factor,0.999999
+Average time,best solution,average error rate
+21.4334,3814,0
