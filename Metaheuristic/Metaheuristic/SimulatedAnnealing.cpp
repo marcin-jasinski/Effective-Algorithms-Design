@@ -5,7 +5,7 @@
 #include <random>
 #include <iostream>
 
-#define epsilon 0.0001
+#define epsilon 0.1
 
 std::vector<int> getRandomPermutation(int citiesNumber)
 {

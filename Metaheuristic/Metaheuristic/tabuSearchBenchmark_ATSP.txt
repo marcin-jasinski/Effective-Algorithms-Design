@@ -1,0 +1,131 @@
+=== ATSP files benchmark (SA) ===
+
+Number of cities,17
+
+Max iterations,1000
+Average time,best solution,average error rate
+0.215222,40,0
+
+Max iterations,1500
+Average time,best solution,average error rate
+0.322098,40,0
+
+Max iterations,2000
+Average time,best solution,average error rate
+0.403825,42,0
+
+Max iterations,2500
+Average time,best solution,average error rate
+0.51763,42,0
+
+Max iterations,5000
+Average time,best solution,average error rate
+1.05412,41,0
+
+Max iterations,10000
+Average time,best solution,average error rate
+2.08701,40,0
+
+Number of cities,36
+
+Max iterations,1000
+Average time,best solution,average error rate
+1.38614,1744,0
+
+Max iterations,1500
+Average time,best solution,average error rate
+2.0918,1788,0
+
+Max iterations,2000
+Average time,best solution,average error rate
+2.73944,1788,0
+
+Max iterations,2500
+Average time,best solution,average error rate
+3.46348,1788,0
+
+Max iterations,5000
+Average time,best solution,average error rate
+6.92124,1788,0
+
+Max iterations,10000
+Average time,best solution,average error rate
+13.7697,1788,0
+
+Number of cities,65
+
+Max iterations,1000
+Average time,best solution,average error rate
+6.22665,2505,0
+
+Max iterations,1500
+Average time,best solution,average error rate
+9.21629,2505,0
+
+Max iterations,2000
+Average time,best solution,average error rate
+12.6399,2505,0
+
+Max iterations,2500
+Average time,best solution,average error rate
+20.7013,2505,0
+
+Max iterations,5000
+Average time,best solution,average error rate
+32.5336,2505,0
+
+Max iterations,10000
+Average time,best solution,average error rate
+84.6582,2505,0
+
+Number of cities,100
+
+Max iterations,1000
+Average time,best solution,average error rate
+29.306,44940,0
+
+Max iterations,1500
+Average time,best solution,average error rate
+43.53,44940,0
+
+Max iterations,2000
+Average time,best solution,average error rate
+58.8228,44940,0
+
+Max iterations,2500
+Average time,best solution,average error rate
+73.8371,44940,0
+
+Max iterations,5000
+Average time,best solution,average error rate
+162.682,44940,0
+
+Max iterations,10000
+Average time,best solution,average error rate
+331.992,44940,0
+
+Number of cities,171
+
+Max iterations,1000
+Average time,best solution,average error rate
+104.991,3771,0
+
+Max iterations,1500
+Average time,best solution,average error rate
+136.94,3771,0
+
+Max iterations,2000
+Average time,best solution,average error rate
+172.592,3771,0
+
+Max iterations,2500
+Average time,best solution,average error rate
+221.625,3771,0
+
+Max iterations,5000
+Average time,best solution,average error rate
+469.35,3771,0
+
+Max iterations,10000
+Average time,best solution,average error rate
+965.225,3771,0

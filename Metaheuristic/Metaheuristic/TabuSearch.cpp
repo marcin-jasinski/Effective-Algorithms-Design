@@ -9,13 +9,47 @@
 #define epsilon 0.0001
 std::vector<std::vector<int>> moves;
 
+std::vector<int> getInitialSolution(int citiesNumber, int** edgesMatrix) 
+{
+	int startNode = 0;
+	int foundNeighbours = 0;
+
+	std::vector<int> initialSolution;
+	initialSolution.push_back(startNode);
+
+	while (foundNeighbours < citiesNumber - 1)
+	{
+		int bestNeighbourIndex = -1;
+		int bestNeighbourCost = INT_MAX;
+
+		for (int i = 0; i < citiesNumber; i++)
+		{
+			if (i != startNode && edgesMatrix[startNode][i] < bestNeighbourCost &&
+				std::find(initialSolution.begin(), initialSolution.end(), i) == initialSolution.end())
+			{
+				bestNeighbourIndex = i;
+				bestNeighbourCost = edgesMatrix[startNode][i];
+			}
+		}
+
+		initialSolution.push_back(bestNeighbourIndex);
+		startNode = bestNeighbourIndex;
+		foundNeighbours++;
+	}
+
+	for (int i = 0; i < citiesNumber; i++) initialSolution.at(i) += 1;
+
+	return initialSolution;
+}
+
 std::vector<int> getRandomPermutationTabu(int citiesNumber)
 {
 	std::srand(unsigned(std::time(0)));
 	std::vector<int> randomPermutation;
-	for (int i = 1; i <= citiesNumber; ++i) randomPermutation.push_back(i);
+	for (int i = 0; i < citiesNumber; ++i) randomPermutation.push_back(i);
 	std::random_shuffle(randomPermutation.begin(), randomPermutation.end());
 
+	for (int i = 0; i < citiesNumber; i++) randomPermutation.at(i) += 1;
 	return randomPermutation;
 }
 
@@ -46,7 +80,7 @@ std::vector<std::vector<int>> getNeighbourhood(std::vector<int> currentPermutati
 	return neighbourhood;
 }
 
-int pathCost(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
+int pathCostTabu(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
 {
 	int totalCost = 0;
 	int startingCityIndex = permutation.at(0) - 1;
@@ -64,9 +98,12 @@ int pathCost(std::vector<int> permutation, int** edgesMatrix, int citiesNumber)
 	return totalCost;
 }
 
-std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNumber, int** edgesMatrix)
+std::vector<int> tabuSearch(int maxIterations, int citiesNumber, int** edgesMatrix)
 {
-	std::vector<int> s0 = getRandomPermutationTabu(citiesNumber);
+	int tabuListSize = citiesNumber * 3;
+	int iterationThreshold = tabuListSize * 3;
+
+	std::vector<int> s0 = getInitialSolution(citiesNumber, edgesMatrix);
 	std::vector<int> sBest = s0;
 	std::vector<int> bestCandidate = s0;
 
@@ -75,13 +112,13 @@ std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNum
 
 	std::vector<std::vector<int>> sNeighbourhood;
 	std::vector<std::vector<int>> tabuList;
-	std::vector<int> moveToBePutOnTabuList; // czyNieZarezerwowanoCa³egoPrzedzia³uDlaPsa()
+	std::vector<int> moveToBePutOnTabuList; 
 
-	int iterationThreshold = 25;
 	int iteration = 1;
 	while (iteration <= maxIterations)
 	{
 		bool noAcceptedCandidates = true;
+
 		sNeighbourhood = getNeighbourhood(bestCandidate, citiesNumber);
 		for (int i = 0; i < sNeighbourhood.size(); i++)
 		{
@@ -90,7 +127,7 @@ std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNum
 
 			if (std::find(tabuList.begin(), tabuList.end(), moveToCandidate) != tabuList.end())
 			{
-				if (pathCost(sCandidate, edgesMatrix, citiesNumber) < pathCost(sBest, edgesMatrix, citiesNumber))
+				if (pathCostTabu(sCandidate, edgesMatrix, citiesNumber) < pathCostTabu(sBest, edgesMatrix, citiesNumber))
 				{
 					bestCandidate = sCandidate;
 					moveToBePutOnTabuList = moveToCandidate;
@@ -99,7 +136,7 @@ std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNum
 			}
 			else
 			{
-				if (pathCost(sCandidate, edgesMatrix, citiesNumber) < pathCost(bestCandidate, edgesMatrix, citiesNumber))
+				if (pathCostTabu(sCandidate, edgesMatrix, citiesNumber) < pathCostTabu(bestCandidate, edgesMatrix, citiesNumber))
 				{
 					noAcceptedCandidates = false;
 					bestCandidate = sCandidate;
@@ -114,19 +151,22 @@ std::vector<int> tabuSearch(int maxIterations, int tabuMultiplier, int citiesNum
 
 		if (iterationThreshold <= 0)
 		{
+			moves.clear();
+			tabuList.clear();
 			sNeighbourhood.clear();
-			iterationThreshold = 25;
+			iterationThreshold = tabuListSize * 3;
+
 			bestCandidate = getRandomPermutationTabu(citiesNumber);
 		}
 		else
 		{
-			if (pathCost(bestCandidate, edgesMatrix, citiesNumber) < pathCost(sBest, edgesMatrix, citiesNumber))
+			if (pathCostTabu(bestCandidate, edgesMatrix, citiesNumber) < pathCostTabu(sBest, edgesMatrix, citiesNumber))
 			{
 				sBest = bestCandidate;
 			}
 
 			tabuList.push_back(moveToBePutOnTabuList);
-			if (tabuList.size() > tabuMultiplier * citiesNumber) tabuList.erase(tabuList.begin());
+			if (tabuList.size() > tabuListSize) tabuList.erase(tabuList.begin());
 
 			iteration++;
 		}
