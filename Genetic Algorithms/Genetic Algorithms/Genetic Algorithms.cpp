@@ -19,6 +19,7 @@ std::vector<int> solution;
 
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
+int getRouteCost(std::vector<int>);
 
 int main()
 {
@@ -58,6 +59,24 @@ std::vector<std::vector<int>> getStartingPopulation(int populationSize, int prob
 	}
 
 	return population;
+}
+
+int getRouteCost(std::vector<int> specimen, int** edgesMatrix, int citiesNumber)
+{
+	int totalCost = 0;
+	int startingCityIndex = specimen.at(0) - 1;
+	int lastCityIndex = specimen.at(specimen.size() - 1) - 1;
+
+	for (int i = 0; i < specimen.size() - 1; i++)
+	{
+		int currentCity = specimen.at(i) - 1;
+		int nextOnRoute = specimen.at(i + 1) - 1;
+
+		totalCost += edgesMatrix[currentCity][nextOnRoute];
+	}
+	totalCost += edgesMatrix[lastCityIndex][startingCityIndex];
+
+	return totalCost;
 }
 
 void printPath(std::vector<int> solution)
