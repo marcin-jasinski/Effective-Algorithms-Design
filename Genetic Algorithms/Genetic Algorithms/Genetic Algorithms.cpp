@@ -42,13 +42,7 @@ int main()
 	std::vector<std::vector<int>> population;
 
 	population = getStartingPopulation(2, citiesNumber);
-	printSpecimen(population[0]);
-	printSpecimen(population[1]);
-
-	std::cout << "Crosssss...." << std::endl;
 	population = crossoverPopulation(population, 2, citiesNumber);
-	printSpecimen(population[0]);
-	printSpecimen(population[1]);
 
 	std::getchar();
 	return 0;
@@ -120,6 +114,11 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 
 		std::vector<int> parent1 = population.at(parent1_index);
 		std::vector<int> parent2 = population.at(parent2_index);
+
+		std::cout << "Parents: " << std::endl;
+		printSpecimen(parent1);
+		printSpecimen(parent2);
+
 		std::vector<std::pair<int, int>> modelTable;
 
 		for (int i = crossStartPoint; i < crossEndPoint; i++)
@@ -131,8 +130,8 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 		std::vector<int> child1(parent1.begin(), parent1.end());
 		std::vector<int> child2(parent2.begin(), parent2.end());
 
-		std::fill(child1.begin(), child1.end(), -1);
-		std::fill(child2.begin(), child2.end(), -1);
+		std::fill(child1.begin(), child1.end(), 0);
+		std::fill(child2.begin(), child2.end(), 0);
 
 		// initial crossing
 		for (int i = crossStartPoint; i < crossEndPoint; i++)
@@ -141,38 +140,77 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 			child2[i] = parent1[i];
 		}
 
+		std::cout << "After initial crossing" << std::endl;
+		printSpecimen(child1);
+		printSpecimen(child2);
+
 		// inserting values with no conflict
-		for (int i = 1; i <= problemSize; i++)
+		for (int i = 0; i < problemSize; i++)
 		{
-			if (std::find(child1.begin(), child1.end(), i) == child1.end())
+			if (std::find(child1.begin(), child1.end(), parent1.at(i)) == child1.end())
 			{
-				auto it = std::find(parent1.begin(), parent1.end(), i);
-				auto index = std::distance(parent1.begin(), it);
-				child1[index] = i;
+				if (child1.at(i) == 0)
+				{
+					child1[i] = parent1.at(i);
+				}
 			}
 
-			if (std::find(child2.begin(), child2.end(), i) == child2.end())
+			if (std::find(child2.begin(), child2.end(), parent2.at(i)) == child2.end())
 			{
-				auto it = std::find(parent2.begin(), parent2.end(), i);
-				auto index = std::distance(parent2.begin(), it);
-				child2[index] = i;
+				if (child2.at(i) == 0)
+				{
+					child2[i] = parent2.at(i);
+				}
 			}
 		}
+
+		std::cout << "After inserting safe values" << std::endl;
+		printSpecimen(child1);
+		printSpecimen(child2);
 
 		// inserting values from model table
-		for (int i = 0; i < modelTable.size(); i++)
+		for (int i = 0; i < problemSize; i++)
 		{
-			auto currentPair = modelTable.at(i);
+			if (child1.at(i) == 0)
+			{
+				int valueFromParent = parent1[i];
 
-			auto it_first = std::find(parent2.begin(), parent2.end(), currentPair.first);
-			auto index_first = std::distance(parent2.begin(), it_first);
+				for (int j = 0; j < modelTable.size(); j++)
+				{
+					if (modelTable[j].first == valueFromParent)
+					{
+						child1[i] = modelTable[j].second;
+					}
 
-			auto it_second = std::find(parent1.begin(), parent1.end(), currentPair.second);
-			auto index_second = std::distance(parent1.begin(), it_second);
+					if (modelTable[j].second == valueFromParent)
+					{
+						child1[i] = modelTable[j].first;
+					}
+				}
+			}
 
-			child1[index_second] = currentPair.second;
-			child2[index_first] = currentPair.first;
+			if (child2.at(i) == 0)
+			{
+				int valueFromParent = parent2[i];
+
+				for (int j = 0; j < modelTable.size(); j++)
+				{
+					if (modelTable[j].first == valueFromParent)
+					{
+						child2[i] = modelTable[j].second;
+					}
+
+					if (modelTable[j].second == valueFromParent)
+					{
+						child2[i] = modelTable[j].first;
+					}
+				}
+			}
 		}
+		
+		std::cout << "After final crossing" << std::endl;
+		printSpecimen(child1);
+		printSpecimen(child2);
 
 		newPopulation.push_back(child1);
 		newPopulation.push_back(child2);
@@ -207,7 +245,7 @@ void printSpecimen(std::vector<int> specimen)
 {
 	for (int i = 0; i < specimen.size(); i++)
 	{
-		std::cout << specimen[i] << " ";
+		std::cout << std::setw(3) << specimen[i] << " ";
 	}
 	std::cout << std::endl;
 }
