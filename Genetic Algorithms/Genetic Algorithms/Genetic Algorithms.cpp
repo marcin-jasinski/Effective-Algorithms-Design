@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <string>
 #include <random>
+#include <chrono>
 
 void printSpecimen(std::vector<int>);
 void printPath(std::vector<int>);
@@ -28,6 +29,7 @@ std::vector<int> solution;
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
 std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>>, int, int);
+std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>>, double, int, int);
 int getRouteCost(std::vector<int>);
 
 int main()
@@ -42,9 +44,24 @@ int main()
 	std::vector<std::vector<int>> population;
 
 	population = getStartingPopulation(2, citiesNumber);
+
+	std::cout << "Initial population:" << std::endl;
+	printSpecimen(population[0]);
+	printSpecimen(population[1]);
+
 	population = crossoverPopulation(population, 2, citiesNumber);
 
-	std::getchar();
+	std::cout << "After crossover" << std::endl;
+	printSpecimen(population[0]);
+	printSpecimen(population[1]);
+
+	population = mutatePopulation(population, 0.5, 2, citiesNumber);
+
+	std::cout << "After mutation:" << std::endl;
+	printSpecimen(population[0]);
+	printSpecimen(population[1]);
+
+	// std::getchar();
 	return 0;
 }
 
@@ -115,10 +132,6 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 		std::vector<int> parent1 = population.at(parent1_index);
 		std::vector<int> parent2 = population.at(parent2_index);
 
-		std::cout << "Parents: " << std::endl;
-		printSpecimen(parent1);
-		printSpecimen(parent2);
-
 		std::vector<std::pair<int, int>> modelTable;
 
 		for (int i = crossStartPoint; i < crossEndPoint; i++)
@@ -140,10 +153,6 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 			child2[i] = parent1[i];
 		}
 
-		std::cout << "After initial crossing" << std::endl;
-		printSpecimen(child1);
-		printSpecimen(child2);
-
 		// inserting values with no conflict
 		for (int i = 0; i < problemSize; i++)
 		{
@@ -163,10 +172,6 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 				}
 			}
 		}
-
-		std::cout << "After inserting safe values" << std::endl;
-		printSpecimen(child1);
-		printSpecimen(child2);
 
 		// inserting values from model table
 		for (int i = 0; i < problemSize; i++)
@@ -207,10 +212,6 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 				}
 			}
 		}
-		
-		std::cout << "After final crossing" << std::endl;
-		printSpecimen(child1);
-		printSpecimen(child2);
 
 		newPopulation.push_back(child1);
 		newPopulation.push_back(child2);
@@ -219,6 +220,34 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 	}
 
 	return newPopulation;
+}
+
+std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> population, double mutationRatio, int populationSize, int problemSize)
+{
+	// Inversion type
+	std::mt19937_64 rng;
+	uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	std::seed_seq ss{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
+	rng.seed(ss);
+	std::uniform_real_distribution<double> unif(0, 1);
+
+	for (int i = 0; i < populationSize; i++)
+	{
+		double mutationFactor = unif(rng);
+		if (mutationFactor < mutationRatio)
+		{
+			int mutationStartPoint = rand() % problemSize + 1;
+			int mutationEndPoint;
+			do { mutationEndPoint = rand() % problemSize + 1; } while (mutationEndPoint <= mutationStartPoint);
+
+			for (int j = mutationStartPoint; j < mutationEndPoint / 2; j++)
+			{
+				std::swap(population[i][j], population[i][mutationEndPoint - j - 1]);
+			}
+		}
+	}
+
+	return population;
 }
 
 int getRouteCost(std::vector<int> specimen, int** edgesMatrix, int citiesNumber)
