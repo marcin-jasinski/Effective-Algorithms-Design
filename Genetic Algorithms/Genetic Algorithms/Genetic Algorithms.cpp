@@ -38,30 +38,34 @@ int main()
 
 	std::cout << "Starting genetic algorithm... " << std::endl;
 
+	int populationSize = 50;
+	double mutationRatio = 0.1;
+
 	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
 	correctSolution = 3323;
 
 	std::vector<std::vector<int>> population;
 
-	population = getStartingPopulation(2, citiesNumber);
+	population = getStartingPopulation(populationSize, citiesNumber);
 
 	std::cout << "Initial population:" << std::endl;
 	printSpecimen(population[0]);
 	printSpecimen(population[1]);
 
-	population = crossoverPopulation(population, 2, citiesNumber);
+	population = crossoverPopulation(population, populationSize, citiesNumber);
 
 	std::cout << "After crossover" << std::endl;
 	printSpecimen(population[0]);
 	printSpecimen(population[1]);
 
-	population = mutatePopulation(population, 0.5, 2, citiesNumber);
+	population = mutatePopulation(population, mutationRatio, populationSize, citiesNumber);
 
 	std::cout << "After mutation:" << std::endl;
 	printSpecimen(population[0]);
 	printSpecimen(population[1]);
 
-	// std::getchar();
+	std::cout << "DONE!" << std::endl;
+	std::getchar();
 	return 0;
 }
 
@@ -109,8 +113,9 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 	while (currentPopulationSize < targetPopulationSize)
 	{
 		int crossStartPoint = rand() % problemSize + 1;
-		int crossEndPoint;
-		do { crossEndPoint = rand() % problemSize + 1; } while (crossEndPoint <= crossStartPoint);
+		int crossEndPoint = rand() % problemSize + 1;
+		
+		if (crossStartPoint > crossEndPoint) std::swap(crossStartPoint, crossEndPoint);
 
 		int parent1_index, parent2_index;
 		while (true)
@@ -237,8 +242,9 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> pop
 		if (mutationFactor < mutationRatio)
 		{
 			int mutationStartPoint = rand() % problemSize + 1;
-			int mutationEndPoint;
-			do { mutationEndPoint = rand() % problemSize + 1; } while (mutationEndPoint <= mutationStartPoint);
+			int mutationEndPoint = rand() % problemSize + 1;
+			
+			if (mutationStartPoint > mutationEndPoint) std::swap(mutationStartPoint, mutationEndPoint);
 
 			for (int j = mutationStartPoint; j < mutationEndPoint / 2; j++)
 			{
