@@ -28,8 +28,13 @@ std::vector<int> solution;
 
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
+std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<int>>, int, int);
 std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>>, int, int);
 std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>>, double, int, int);
+
+void printPopulation(std::vector<std::vector<int>>);
+void printSpecimen(std::vector<int>);
+
 int getRouteCost(std::vector<int>);
 
 int main()
@@ -38,31 +43,34 @@ int main()
 
 	std::cout << "Starting genetic algorithm... " << std::endl;
 
-	int populationSize = 50;
+	int populationSize = 8;
 	double mutationRatio = 0.1;
 
 	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
 	correctSolution = 3323;
 
 	std::vector<std::vector<int>> population;
+	std::vector<std::vector<int>> newParentsSet;
 
 	population = getStartingPopulation(populationSize, citiesNumber);
 
 	std::cout << "Initial population:" << std::endl;
-	printSpecimen(population[0]);
-	printSpecimen(population[1]);
+	printPopulation(population);
 
-	population = crossoverPopulation(population, populationSize, citiesNumber);
+	newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
+
+	std::cout << "Parents selected:" << std::endl;
+	printPopulation(newParentsSet);
+
+	population = crossoverPopulation(newParentsSet, populationSize, citiesNumber);
 
 	std::cout << "After crossover" << std::endl;
-	printSpecimen(population[0]);
-	printSpecimen(population[1]);
+	printPopulation(population);
 
 	population = mutatePopulation(population, mutationRatio, populationSize, citiesNumber);
 
 	std::cout << "After mutation:" << std::endl;
-	printSpecimen(population[0]);
-	printSpecimen(population[1]);
+	printPopulation(population);
 
 	std::cout << "DONE!" << std::endl;
 	std::getchar();
@@ -100,42 +108,50 @@ std::vector<std::vector<int>> getStartingPopulation(int populationSize, int prob
 	return population;
 }
 
+std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<int>> population, int populationSize, int problemSize)
+{
+	std::vector<std::vector<int>> newParentsSet;
+	std::vector<int> selectedParents;
+
+	int targetParentsCount = populationSize / 2;
+	int currentPopulationSize = 0;
+	
+	while (currentPopulationSize < targetParentsCount)
+	{
+		int newParentIndex = (rand() % populationSize);
+
+		if (std::find(selectedParents.begin(), selectedParents.end(), newParentIndex) == selectedParents.end())
+		{
+			newParentsSet.push_back(population[newParentIndex]);
+			selectedParents.push_back(newParentIndex);
+			currentPopulationSize++;
+		}
+	}
+
+	return newParentsSet;
+}
+
 std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> population, int populationSize, int problemSize)
 {
-	int targetPopulationSize = population.size();
+	int parentPopulationSize = populationSize / 2;
+	int targetPopulationSize = populationSize;
 	int currentPopulationSize = 0;
 
 	std::vector<std::vector<int>> newPopulation;
 
 	// PMX
-	std::vector<int> alreadyCrossed;
-
 	while (currentPopulationSize < targetPopulationSize)
 	{
+		int parent1_index = (rand() % parentPopulationSize);
+		int parent2_index = (rand() % parentPopulationSize);
+
+		std::vector<int> parent1 = population.at(parent1_index);
+		std::vector<int> parent2 = population.at(parent2_index);
+
 		int crossStartPoint = rand() % problemSize + 1;
 		int crossEndPoint = rand() % problemSize + 1;
 		
 		if (crossStartPoint > crossEndPoint) std::swap(crossStartPoint, crossEndPoint);
-
-		int parent1_index, parent2_index;
-		while (true)
-		{
-			parent1_index = (rand() % populationSize);
-			parent2_index = (rand() % populationSize);
-
-			if (parent1_index != parent2_index && //
-				std::find(alreadyCrossed.begin(), alreadyCrossed.end(), parent1_index) == alreadyCrossed.end() && //
-				std::find(alreadyCrossed.begin(), alreadyCrossed.end(), parent2_index) == alreadyCrossed.end())
-			{
-				break;
-			}
-		}
-
-		alreadyCrossed.push_back(parent1_index);
-		alreadyCrossed.push_back(parent2_index);
-
-		std::vector<int> parent1 = population.at(parent1_index);
-		std::vector<int> parent2 = population.at(parent2_index);
 
 		std::vector<std::pair<int, int>> modelTable;
 
@@ -283,6 +299,14 @@ void printSpecimen(std::vector<int> specimen)
 		std::cout << std::setw(3) << specimen[i] << " ";
 	}
 	std::cout << std::endl;
+}
+
+void printPopulation(std::vector<std::vector<int>> population)
+{
+	for (int i = 0; i < population.size(); i++)
+	{
+		printSpecimen(population[i]);
+	}
 }
 
 void printPath(std::vector<int> solution)
