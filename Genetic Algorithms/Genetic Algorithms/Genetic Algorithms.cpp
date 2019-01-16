@@ -26,6 +26,7 @@ const double RRR = 6378.388;
 
 std::vector<int> solution;
 
+std::vector<int> queryModelTable(std::vector<int>);
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
 std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<int>>, int, int);
@@ -35,7 +36,7 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>>, do
 void printPopulation(std::vector<std::vector<int>>);
 void printSpecimen(std::vector<int>);
 
-int getRouteCost(std::vector<int>);
+int getRouteCost(std::vector<int>, int**, int);
 
 int main()
 {
@@ -43,7 +44,7 @@ int main()
 
 	std::cout << "Starting genetic algorithm... " << std::endl;
 
-	int populationSize = 8;
+	int populationSize = 12;
 	double mutationRatio = 0.1;
 
 	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
@@ -54,23 +55,46 @@ int main()
 
 	population = getStartingPopulation(populationSize, citiesNumber);
 
-	std::cout << "Initial population:" << std::endl;
-	printPopulation(population);
+	// std::cout << "Initial population:" << std::endl;
+	// printPopulation(population);
 
-	newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
+	for (int i = 0; i < 100; i++)
+	{
+		std::cout << "Iteration: " << i << std::endl;
 
-	std::cout << "Parents selected:" << std::endl;
-	printPopulation(newParentsSet);
+		newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
 
-	population = crossoverPopulation(newParentsSet, populationSize, citiesNumber);
+		std::cout << "Parents selected:" << std::endl;
+		printPopulation(newParentsSet);
 
-	std::cout << "After crossover" << std::endl;
-	printPopulation(population);
+		population = crossoverPopulation(newParentsSet, populationSize, citiesNumber);
 
-	population = mutatePopulation(population, mutationRatio, populationSize, citiesNumber);
+		std::cout << "After crossover:" << std::endl;
+		printPopulation(population);
 
-	std::cout << "After mutation:" << std::endl;
-	printPopulation(population);
+		population = mutatePopulation(population, mutationRatio, populationSize, citiesNumber);
+
+		//std::cout << "After mutation:" << std::endl;
+		//printPopulation(population);
+	}
+	
+	int bestCost = INT_MAX;
+	int bestCandidate = 0;
+
+	for (int i = 0; i < population.size(); i++)
+	{
+		std::vector<int> candidate = population[i];
+		int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
+
+		if (candidateCost < bestCost)
+		{
+			bestCost = candidateCost;
+			bestCandidate = i;
+		}
+	}
+
+	std::cout << "Best specimen: " << std::endl;
+	printSpecimen(population[bestCandidate]);
 
 	std::cout << "DONE!" << std::endl;
 	std::getchar();
@@ -86,7 +110,7 @@ std::vector<int> getNextSpecimen(int problemSize)
 	{
 		do
 		{
-			genome = std::rand() % problemSize + 1;
+			genome = (std::rand() % problemSize) + 1;
 		} while (std::find(specimen.begin(), specimen.end(), genome) != specimen.end());
 
 		specimen.push_back(genome);
@@ -111,21 +135,46 @@ std::vector<std::vector<int>> getStartingPopulation(int populationSize, int prob
 std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<int>> population, int populationSize, int problemSize)
 {
 	std::vector<std::vector<int>> newParentsSet;
-	std::vector<int> selectedParents;
 
 	int targetParentsCount = populationSize / 2;
 	int currentPopulationSize = 0;
 	
+	std::vector<int> bufferedSpecimen;
+	std::vector<std::vector<int>> populationBuffer;
+
 	while (currentPopulationSize < targetParentsCount)
 	{
-		int newParentIndex = (rand() % populationSize);
-
-		if (std::find(selectedParents.begin(), selectedParents.end(), newParentIndex) == selectedParents.end())
+		while (populationBuffer.size() <= population.size() / 4)
 		{
-			newParentsSet.push_back(population[newParentIndex]);
-			selectedParents.push_back(newParentIndex);
-			currentPopulationSize++;
+			int specimenCandidateIndex = rand() % populationSize;
+
+			if (std::find(bufferedSpecimen.begin(), bufferedSpecimen.end(), specimenCandidateIndex) == bufferedSpecimen.end())
+			{
+				bufferedSpecimen.push_back(specimenCandidateIndex);
+				populationBuffer.push_back(population.at(specimenCandidateIndex));
+			}
 		}
+
+		int bestCost = INT_MAX;
+		int bestCandidate = 0;
+
+		for (int i = 0; i < bufferedSpecimen.size(); i++)
+		{
+			std::vector<int> candidate = populationBuffer[i];
+			int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
+
+			if (candidateCost < bestCost)
+			{
+				bestCost = candidateCost;
+				bestCandidate = i;
+			}
+		}
+
+		newParentsSet.push_back(population[bestCandidate]);
+		currentPopulationSize++;
+
+		bufferedSpecimen.clear();
+		populationBuffer.clear();
 	}
 
 	return newParentsSet;
@@ -143,7 +192,11 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 	while (currentPopulationSize < targetPopulationSize)
 	{
 		int parent1_index = (rand() % parentPopulationSize);
-		int parent2_index = (rand() % parentPopulationSize);
+		int parent2_index;
+		do
+		{
+			parent2_index = (rand() % parentPopulationSize);
+		} while (parent1_index == parent2_index);
 
 		std::vector<int> parent1 = population.at(parent1_index);
 		std::vector<int> parent2 = population.at(parent2_index);
@@ -228,7 +281,7 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 
 					if (modelTable[j].second == valueFromParent)
 					{
-						child2[i] = modelTable[j].first;
+						child2[i] = modelTable[j].first;	
 					}
 				}
 			}
@@ -236,7 +289,7 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 
 		newPopulation.push_back(child1);
 		newPopulation.push_back(child2);
-
+		modelTable.clear();
 		currentPopulationSize += 2;
 	}
 
@@ -298,7 +351,7 @@ void printSpecimen(std::vector<int> specimen)
 	{
 		std::cout << std::setw(3) << specimen[i] << " ";
 	}
-	std::cout << std::endl;
+	std::cout << "   cost: " << getRouteCost(specimen, edgesMatrix, citiesNumber) << std::endl;
 }
 
 void printPopulation(std::vector<std::vector<int>> population)
