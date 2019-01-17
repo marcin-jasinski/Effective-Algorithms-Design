@@ -44,10 +44,11 @@ int main()
 
 	std::cout << "Starting genetic algorithm... " << std::endl;
 
-	int populationSize = 12;
+	int populationSize = 50;
 	double mutationRatio = 0.1;
 
 	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
+	//correctSolution = 294358;
 	correctSolution = 3323;
 
 	std::vector<std::vector<int>> population;
@@ -58,24 +59,41 @@ int main()
 	// std::cout << "Initial population:" << std::endl;
 	// printPopulation(population);
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 1; i <= 100; i++)
 	{
-		std::cout << "Iteration: " << i << std::endl;
+		std::cout << "Population: " << i << ", ";
 
 		newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
 
-		std::cout << "Parents selected:" << std::endl;
-		printPopulation(newParentsSet);
+		//std::cout << "Parents selected:" << std::endl;
+		//printPopulation(newParentsSet);
 
 		population = crossoverPopulation(newParentsSet, populationSize, citiesNumber);
 
-		std::cout << "After crossover:" << std::endl;
-		printPopulation(population);
+		//std::cout << "After crossover:" << std::endl;
+		//printPopulation(population);
 
 		population = mutatePopulation(population, mutationRatio, populationSize, citiesNumber);
 
 		//std::cout << "After mutation:" << std::endl;
 		//printPopulation(population);
+
+		int bestCost = INT_MAX;
+		int bestCandidate = 0;
+
+		for (int i = 0; i < population.size(); i++)
+		{
+			std::vector<int> candidate = population[i];
+			int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
+
+			if (candidateCost < bestCost)
+			{
+				bestCost = candidateCost;
+				bestCandidate = i;
+			}
+		}
+
+		std::cout << "best cost: " << bestCost << std::endl;
 	}
 	
 	int bestCost = INT_MAX;
@@ -95,8 +113,10 @@ int main()
 
 	std::cout << "Best specimen: " << std::endl;
 	printSpecimen(population[bestCandidate]);
-
-	std::cout << "DONE!" << std::endl;
+	
+	std::cout << "Correct solution:" << correctSolution << std::endl;
+	std::cout << "Error: " << ((bestCost - correctSolution) * 100.0 / correctSolution) << "%" << std::endl;
+	
 	std::getchar();
 	return 0;
 }
@@ -191,16 +211,18 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 	// PMX
 	while (currentPopulationSize < targetPopulationSize)
 	{
-		int parent1_index = (rand() % parentPopulationSize);
-		int parent2_index;
+		std::vector<int> parent1, parent2;
+
 		do
 		{
-			parent2_index = (rand() % parentPopulationSize);
-		} while (parent1_index == parent2_index);
+			int parent1_index = (rand() % parentPopulationSize);
+			int parent2_index = (rand() % parentPopulationSize);
 
-		std::vector<int> parent1 = population.at(parent1_index);
-		std::vector<int> parent2 = population.at(parent2_index);
+			parent1 = population.at(parent1_index);
+			parent2 = population.at(parent2_index);
 
+		} while (parent1 == parent2);
+		
 		int crossStartPoint = rand() % problemSize + 1;
 		int crossEndPoint = rand() % problemSize + 1;
 		
@@ -210,7 +232,9 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 
 		for (int i = crossStartPoint; i < crossEndPoint; i++)
 		{
-			auto modelPair = std::make_pair(parent1.at(i), parent2.at(i));
+			auto modelPair = std::make_pair(0, 0);
+			modelPair.first = parent1.at(i);
+			modelPair.second = parent2.at(i);
 			modelTable.push_back(modelPair);
 		}
 
@@ -227,22 +251,24 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 			child2[i] = parent1[i];
 		}
 
-		// inserting values with no conflict
+		// inserting "no conflict" values from original parents
 		for (int i = 0; i < problemSize; i++)
 		{
-			if (std::find(child1.begin(), child1.end(), parent1.at(i)) == child1.end())
+			if (child1.at(i) == 0)
 			{
-				if (child1.at(i) == 0)
+				int valueInParent1 = parent1.at(i);
+				if (std::find(child1.begin(), child1.end(), valueInParent1) == child1.end())
 				{
-					child1[i] = parent1.at(i);
+					child1[i] = valueInParent1;
 				}
 			}
 
-			if (std::find(child2.begin(), child2.end(), parent2.at(i)) == child2.end())
+			if (child2.at(i) == 0)
 			{
-				if (child2.at(i) == 0)
+				int valueInParent2 = parent2.at(i);
+				if (std::find(child2.begin(), child2.end(), valueInParent2) == child2.end())
 				{
-					child2[i] = parent2.at(i);
+					child2[i] = valueInParent2;
 				}
 			}
 		}
@@ -252,36 +278,44 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 		{
 			if (child1.at(i) == 0)
 			{
-				int valueFromParent = parent1[i];
+				int valueInParent1 = parent1.at(i);
 
-				for (int j = 0; j < modelTable.size(); j++)
+				while (true)
 				{
-					if (modelTable[j].first == valueFromParent)
-					{
-						child1[i] = modelTable[j].second;
-					}
+					int indexInParent2 = std::distance(parent2.begin(), std::find(parent2.begin(), parent2.end(), valueInParent1));
 
-					if (modelTable[j].second == valueFromParent)
+					int mappedTo = parent1.at(indexInParent2);
+
+					if (std::find(child1.begin(), child1.end(), mappedTo) == child1.end())
 					{
-						child1[i] = modelTable[j].first;
+						child1[i] = mappedTo;
+						break;
+					}
+					else
+					{
+						valueInParent1 = mappedTo;
 					}
 				}
 			}
 
 			if (child2.at(i) == 0)
 			{
-				int valueFromParent = parent2[i];
+				int valueInParent2 = parent2.at(i);
 
-				for (int j = 0; j < modelTable.size(); j++)
+				while (true)
 				{
-					if (modelTable[j].first == valueFromParent)
-					{
-						child2[i] = modelTable[j].second;
-					}
+					int indexInParent1 = std::distance(parent1.begin(), std::find(parent1.begin(), parent1.end(), valueInParent2));
 
-					if (modelTable[j].second == valueFromParent)
+					int mappedTo = parent2.at(indexInParent1);
+
+					if (std::find(child2.begin(), child2.end(), mappedTo) == child2.end())
 					{
-						child2[i] = modelTable[j].first;	
+						child2[i] = mappedTo;
+						break;
+					}
+					else
+					{
+						valueInParent2 = mappedTo;
 					}
 				}
 			}
