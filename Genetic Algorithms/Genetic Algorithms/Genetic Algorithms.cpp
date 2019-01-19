@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Point.h"
-
+#include "Stopwatch.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -26,6 +26,9 @@ const double RRR = 6378.388;
 
 std::vector<int> solution;
 
+std::vector<std::vector<int>> runGeneticAlgorithm(int, int, int, double, int, double);
+void runGAbenchmarks();
+
 std::vector<int> queryModelTable(std::vector<int>);
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
@@ -37,62 +40,33 @@ void printPopulation(std::vector<std::vector<int>>);
 void printSpecimen(std::vector<int>);
 
 int getRouteCost(std::vector<int>, int**, int);
+std::pair<std::vector<int>, int> getBestSpecimen(std::vector<std::vector<int>>);
 double averageInPopulation(std::vector<std::vector<int>>);
 
 int main()
 {
 	srand(time(NULL));
 
-	std::cout << "Starting genetic algorithm... " << std::endl;
+	runGAbenchmarks();
 
-	int populationSize = 30;
-	double crossoverRatio = 1.0;
-	int crossoverType = 2;
-	double mutationRatio = 0.05;
-	int mutationType = 1;
+	return 0;
+}
 
-	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.atsp");
-	correctSolution = 3323;
-
+std::vector<std::vector<int>> runGeneticAlgorithm(int populationSize, int maxPopulations, int crossoverType, double crossoverRatio, int mutationType, double mutationRatio)
+{
 	std::vector<std::vector<int>> population;
 	std::vector<std::vector<int>> newParentsSet;
 
 	population = getStartingPopulation(populationSize, citiesNumber);
 
-	for (int i = 1; i <= 100; i++)
+	for (int i = 1; i <= maxPopulations; i++)
 	{
-		std::cout << "Population: " << i << ", ";
-
 		newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
 		population = crossoverPopulation(newParentsSet, crossoverRatio, crossoverType, populationSize);
 		population = mutatePopulation(population, mutationRatio, mutationType, populationSize);
-
-		std::cout << " average cost: " << averageInPopulation(population) << std::endl;
-	}
-	
-	int bestCost = INT_MAX;
-	int bestCandidate = 0;
-
-	for (int i = 0; i < population.size(); i++)
-	{
-		std::vector<int> candidate = population[i];
-		int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
-
-		if (candidateCost < bestCost)
-		{
-			bestCost = candidateCost;
-			bestCandidate = i;
-		}
 	}
 
-	std::cout << "Best specimen: " << std::endl;
-	printSpecimen(population[bestCandidate]);
-	
-	std::cout << "Correct solution:" << correctSolution << std::endl;
-	std::cout << "Error: " << ((bestCost - correctSolution) * 100.0 / correctSolution) << "%" << std::endl;
-	
-	std::getchar();
-	return 0;
+	return population;
 }
 
 std::vector<int> getNextSpecimen(int problemSize)
@@ -437,6 +411,26 @@ int getRouteCost(std::vector<int> specimen, int** edgesMatrix, int citiesNumber)
 	return totalCost;
 }
 
+std::pair<std::vector<int>, int> getBestSpecimen(std::vector<std::vector<int>> population)
+{
+	int bestCost = INT_MAX;
+	int bestCandidate = 0;
+
+	for (int i = 0; i < population.size(); i++)
+	{
+		std::vector<int> candidate = population[i];
+		int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
+
+		if (candidateCost < bestCost)
+		{
+			bestCost = candidateCost;
+			bestCandidate = i;
+		}
+	}
+
+	return std::make_pair(population[bestCandidate], bestCost);
+}
+
 double averageInPopulation(std::vector<std::vector<int>> population)
 {
 	double avg = 0.0;
@@ -447,8 +441,6 @@ double averageInPopulation(std::vector<std::vector<int>> population)
 
 	return 1.0 * avg / population.size();
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void printSpecimen(std::vector<int> specimen)
 {
@@ -607,4 +599,252 @@ int TWOD_geo_distance(const Point a, const Point b)
 	double q3 = std::cos(a_geo.x + b_geo.x);
 
 	return (int)RRR * std::acos(0.5 * ((1.0 + q1)*q2 - (1.0 - q1) * q3)) + 1.0;
+}
+
+void benchmarkGA(std::fstream &file, int correctSolution, int populationSize, int maxPopulations, int crossoverType, double crossoverRatio, int mutationType, double mutationRatio)
+{
+	std::vector<std::vector<int>> result;
+	Stopwatch timer = Stopwatch();
+	
+	timer.StartCounter();
+	result = runGeneticAlgorithm(populationSize, maxPopulations, crossoverType, crossoverRatio, mutationType, mutationRatio);
+	double endTime = timer.GetCounter();
+
+	std::pair<std::vector<int>, int> bestSpecimen = getBestSpecimen(result);
+
+	int bestCost = bestSpecimen.second;
+	double average = averageInPopulation(result);
+	double error = ((bestSpecimen.second - correctSolution) * 100.0 / correctSolution);
+
+	std::cout << "Best cost: " << bestCost << std::endl;
+	std::cout << "Error:     " << error << "%" << std::endl;
+	std::cout << "Average :  " << average << std::endl;
+	std::cout << "Time:      " << endTime << " seconds" << std::endl;
+
+	file << populationSize << "," << maxPopulations << "," << bestCost << "," << error << "," << average << "," << endTime << std::endl;
+}
+
+void runInstanceBenchmarkSet(std::fstream &file, int correctSolution)
+{
+	system("cls");
+	std::cout << "Starting for population 50 " << std::endl;
+
+	benchmarkGA(file, correctSolution, 50, 250, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 50, 500, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 50, 750, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 50, 1000, 1, 0.7, 1, 0.1);
+
+	system("cls");
+	std::cout << "Starting for population 100 " << std::endl;
+
+	benchmarkGA(file, correctSolution, 100, 250, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 750, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 1000, 1, 0.7, 1, 0.1);
+
+	system("cls");
+	std::cout << "Starting for population 150 " << std::endl;
+
+	benchmarkGA(file, correctSolution, 150, 250, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 150, 500, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 150, 750, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 150, 1000, 1, 0.7, 1, 0.1);
+
+	system("cls");
+	std::cout << "Starting for population 200 " << std::endl;
+
+	benchmarkGA(file, correctSolution, 200, 250, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 200, 500, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 200, 750, 1, 0.7, 1, 0.1);
+	benchmarkGA(file, correctSolution, 200, 1000, 1, 0.7, 1, 0.1);
+
+	std::cout << "Finished for population 200 " << std::endl;
+}
+
+void runCrossingRatioBenchmarkSet(std::fstream &file, int correctSolution)
+{
+	system("cls");
+	std::cout << "Cross ratio = 0.6" << std::endl;
+	file << "Cross_ratio,0.6" << std::endl; 
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.6, 1, 0.1);
+
+	system("cls");
+	std::cout << "Cross ratio = 0.9" << std::endl;
+	file << "Cross_ratio,0.9" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.9, 1, 0.1);
+
+	system("cls");
+	std::cout << "Cross ratio = 1.0" << std::endl;
+	file << "Cross_ratio,1.0" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 500, 1, 1.0, 1, 0.1);
+}
+
+void runCrossingMutationTypesBenchmarkSet(std::fstream &file, int correctSolution)
+{
+	system("cls");
+	std::cout << "Crossover type: PMX" << std::endl;
+	file << "Crossover_type,PMX" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 250, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 750, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 1000, 1, 0.6, 1, 0.1);
+
+	system("cls");
+	std::cout << "Crossover type: OX" << std::endl;
+	file << "Crossover_type,OX" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 250, 2, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 500, 2, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 750, 2, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 1000, 2, 0.6, 1, 0.1);
+
+	/////////////////////////////////////////////////////////////////////////////////
+
+	system("cls");
+	std::cout << "Mutation type: invert" << std::endl;
+	file << "Mutation_type,invert" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 250, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 750, 1, 0.6, 1, 0.1);
+	benchmarkGA(file, correctSolution, 100, 1000, 1, 0.6, 1, 0.1);
+
+	system("cls");
+	std::cout << "Mutation type: swap" << std::endl;
+	file << "Mutation_type,swap" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 250, 1, 0.6, 2, 0.1);
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.6, 2, 0.1);
+	benchmarkGA(file, correctSolution, 100, 750, 1, 0.6, 2, 0.1);
+	benchmarkGA(file, correctSolution, 100, 1000, 1, 0.6, 2, 0.1);
+}
+
+void runGAbenchmarks()
+{
+	std::fstream geneticAlgorithm_ATSP_Instances;
+	geneticAlgorithm_ATSP_Instances.open("geneticAlgorithm_benchmark_ATSP_Instances.txt", std::ios::out | std::ios::trunc);
+	if (!geneticAlgorithm_ATSP_Instances.good())
+	{
+		std::cout << "Error opening file..." << std::endl;
+		return;
+	}
+	else
+	{
+		geneticAlgorithm_ATSP_Instances << "population_size,max_populations,best_cost,error,average_population,time" << std::endl;
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/br17.atsp");
+		correctSolution = 39;
+		runInstanceBenchmarkSet(geneticAlgorithm_ATSP_Instances, correctSolution);
+		
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/ftv35.atsp");
+		correctSolution = 1473;
+		runInstanceBenchmarkSet(geneticAlgorithm_ATSP_Instances, correctSolution);
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/ftv64.atsp");
+		correctSolution = 1839;
+		runInstanceBenchmarkSet(geneticAlgorithm_ATSP_Instances, correctSolution);
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/kro124p.atsp");
+		correctSolution = 36230;
+		runInstanceBenchmarkSet(geneticAlgorithm_ATSP_Instances, correctSolution);
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/ftv170.atsp");
+		correctSolution = 2755;
+		runInstanceBenchmarkSet(geneticAlgorithm_ATSP_Instances, correctSolution);
+
+		geneticAlgorithm_ATSP_Instances.close();
+	}
+
+	std::fstream geneticAlgorithm_TSP_Instances;
+	geneticAlgorithm_TSP_Instances.open("geneticAlgorithm_benchmark_TSP_Instances.txt", std::ios::out | std::ios::trunc);
+	if (!geneticAlgorithm_TSP_Instances.good())
+	{
+		std::cout << "Error opening file..." << std::endl;
+		return;
+	}
+	else
+	{
+		geneticAlgorithm_TSP_Instances << "population_size,max_populations,best_cost,error,average_population,time" << std::endl;
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
+		correctSolution = 3323;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Instances, correctSolution);
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/ulysses22.tsp");
+		correctSolution = 7013;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Instances, correctSolution);
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/gr96.tsp");
+		correctSolution = 55209;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Instances, correctSolution);
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/gr137.tsp");
+		correctSolution = 69853;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Instances, correctSolution);
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/gr202.tsp");
+		correctSolution = 40160;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Instances, correctSolution);
+
+		geneticAlgorithm_TSP_Instances.close();
+	}
+
+	std::fstream geneticAlgorithm_ATSP_CrossRatio;
+	geneticAlgorithm_ATSP_CrossRatio.open("geneticAlgorithm_benchmark_ATSP_CrossRatio.txt", std::ios::out | std::ios::trunc);
+	if (!geneticAlgorithm_ATSP_CrossRatio.good())
+	{
+		std::cout << "Error opening file..." << std::endl;
+		return;
+	}
+	else
+	{
+		geneticAlgorithm_ATSP_CrossRatio << "population_size,max_populations,best_cost,error,average_population,time" << std::endl;
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/ftv35.atsp");
+		correctSolution = 1473;
+		runCrossingRatioBenchmarkSet(geneticAlgorithm_ATSP_CrossRatio, correctSolution);
+
+		edgesMatrix = readAsymetricTSPData("ATSP_Data/ftv170.atsp");
+		correctSolution = 2755;
+		runCrossingRatioBenchmarkSet(geneticAlgorithm_ATSP_CrossRatio, correctSolution);
+
+		geneticAlgorithm_ATSP_CrossRatio.close();
+	}
+
+	std::fstream geneticAlgorithm_TSP_CrossRatio;
+	geneticAlgorithm_TSP_CrossRatio.open("geneticAlgorithm_benchmark_TSP_CrossRatio.txt", std::ios::out | std::ios::trunc);
+	if (!geneticAlgorithm_TSP_CrossRatio.good())
+	{
+		std::cout << "Error opening file..." << std::endl;
+		return;
+	}
+	else
+	{
+		geneticAlgorithm_TSP_CrossRatio << "population_size,max_populations,best_cost,error,average_population,time" << std::endl;
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/ulysses22.tsp");
+		correctSolution = 7013;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_CrossRatio, correctSolution);
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/gr202.tsp");
+		correctSolution = 40160;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_CrossRatio, correctSolution);
+
+		geneticAlgorithm_TSP_CrossRatio.close();
+	}
+
+	std::fstream geneticAlgorithm_TSP_Parameters;
+	geneticAlgorithm_TSP_Parameters.open("geneticAlgorithm_benchmark_TSP_Parameters.txt", std::ios::out | std::ios::trunc);
+	if (!geneticAlgorithm_TSP_Parameters.good())
+	{
+		std::cout << "Error opening file..." << std::endl;
+		return;
+	}
+	else
+	{
+		geneticAlgorithm_TSP_Parameters << "population_size,max_populations,best_cost,error,average_population,time" << std::endl;
+
+		edgesMatrix = readSymetricTSPData("TSP_Data/gr96.tsp");
+		correctSolution = 55209;
+		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Parameters, correctSolution);
+
+		geneticAlgorithm_TSP_Parameters.close();
+	}
 }
