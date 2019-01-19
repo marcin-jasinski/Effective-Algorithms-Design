@@ -30,13 +30,14 @@ std::vector<int> queryModelTable(std::vector<int>);
 std::vector<int> getNextSpecimen(int);
 std::vector<std::vector<int>> getStartingPopulation(int, int);
 std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<int>>, int, int);
-std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>>, double, int);
-std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>>, double, int);
+std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>>, double, int, int);
+std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>>, double, int, int);
 
 void printPopulation(std::vector<std::vector<int>>);
 void printSpecimen(std::vector<int>);
 
 int getRouteCost(std::vector<int>, int**, int);
+double averageInPopulation(std::vector<std::vector<int>>);
 
 int main()
 {
@@ -44,11 +45,13 @@ int main()
 
 	std::cout << "Starting genetic algorithm... " << std::endl;
 
-	int populationSize = 100;
-	double crossoverRatio = 0.2;
+	int populationSize = 30;
+	double crossoverRatio = 1.0;
+	int crossoverType = 2;
 	double mutationRatio = 0.05;
+	int mutationType = 1;
 
-	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
+	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.atsp");
 	correctSolution = 3323;
 
 	std::vector<std::vector<int>> population;
@@ -56,30 +59,15 @@ int main()
 
 	population = getStartingPopulation(populationSize, citiesNumber);
 
-	for (int i = 1; i <= 1000; i++)
+	for (int i = 1; i <= 100; i++)
 	{
 		std::cout << "Population: " << i << ", ";
 
 		newParentsSet = selectSpecimenForCrossing(population, populationSize, citiesNumber);
-		population = crossoverPopulation(newParentsSet, crossoverRatio, populationSize);
-		population = mutatePopulation(population, mutationRatio, populationSize);
+		population = crossoverPopulation(newParentsSet, crossoverRatio, crossoverType, populationSize);
+		population = mutatePopulation(population, mutationRatio, mutationType, populationSize);
 
-		int bestCost = INT_MAX;
-		int bestCandidate = 0;
-
-		for (int i = 0; i < population.size(); i++)
-		{
-			std::vector<int> candidate = population[i];
-			int candidateCost = getRouteCost(candidate, edgesMatrix, citiesNumber);
-
-			if (candidateCost < bestCost)
-			{
-				bestCost = candidateCost;
-				bestCandidate = i;
-			}
-		}
-
-		std::cout << "best cost: " << bestCost << std::endl;
+		std::cout << " average cost: " << averageInPopulation(population) << std::endl;
 	}
 	
 	int bestCost = INT_MAX;
@@ -186,7 +174,7 @@ std::vector<std::vector<int>> selectSpecimenForCrossing(std::vector<std::vector<
 	return newParentsSet;
 }
 
-std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> population, double crossoverRatio, int populationSize)
+std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> population, double crossoverRatio, int crossoverType, int populationSize)
 {
 	int parentPopulationSize = populationSize / 2;
 	int targetPopulationSize = populationSize;
@@ -194,7 +182,6 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 
 	std::vector<std::vector<int>> newPopulation;
 
-	// PMX
 	while (currentPopulationSize < targetPopulationSize)
 	{
 		std::vector<int> parent1, parent2;
@@ -241,84 +228,127 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 			std::fill(child1.begin(), child1.end(), 0);
 			std::fill(child2.begin(), child2.end(), 0);
 
-			// initial crossing
-			for (int i = crossStartPoint; i < crossEndPoint; i++)
+
+			// PMX
+			if (crossoverType == 1)
 			{
-				child1[i] = parent2[i];
-				child2[i] = parent1[i];
+				// initial crossing
+				for (int i = crossStartPoint; i < crossEndPoint; i++)
+				{
+					child1[i] = parent2[i];
+					child2[i] = parent1[i];
+				}
+
+				// inserting "no conflict" values from original parents
+				for (int i = 0; i < citiesNumber; i++)
+				{
+					if (child1.at(i) == 0)
+					{
+						int valueInParent1 = parent1.at(i);
+						if (std::find(child1.begin(), child1.end(), valueInParent1) == child1.end())
+						{
+							child1[i] = valueInParent1;
+						}
+					}
+
+					if (child2.at(i) == 0)
+					{
+						int valueInParent2 = parent2.at(i);
+						if (std::find(child2.begin(), child2.end(), valueInParent2) == child2.end())
+						{
+							child2[i] = valueInParent2;
+						}
+					}
+				}
+
+				// inserting values from model table
+				for (int i = 0; i < citiesNumber; i++)
+				{
+					if (child1.at(i) == 0)
+					{
+						int valueInParent1 = parent1.at(i);
+
+						while (true)
+						{
+							int indexInParent2 = std::distance(parent2.begin(), std::find(parent2.begin(), parent2.end(), valueInParent1));
+
+							int mappedTo = parent1.at(indexInParent2);
+
+							if (std::find(child1.begin(), child1.end(), mappedTo) == child1.end())
+							{
+								child1[i] = mappedTo;
+								break;
+							}
+							else
+							{
+								valueInParent1 = mappedTo;
+							}
+						}
+					}
+
+					if (child2.at(i) == 0)
+					{
+						int valueInParent2 = parent2.at(i);
+
+						while (true)
+						{
+							int indexInParent1 = std::distance(parent1.begin(), std::find(parent1.begin(), parent1.end(), valueInParent2));
+
+							int mappedTo = parent2.at(indexInParent1);
+
+							if (std::find(child2.begin(), child2.end(), mappedTo) == child2.end())
+							{
+								child2[i] = mappedTo;
+								break;
+							}
+							else
+							{
+								valueInParent2 = mappedTo;
+							}
+						}
+					}
+				}
+
+				modelTable.clear();
+
 			}
 
-			// inserting "no conflict" values from original parents
-			for (int i = 0; i < citiesNumber; i++)
+			// OX
+			if (crossoverType == 2)
 			{
-				if (child1.at(i) == 0)
+				// initial crossing
+				for (int i = crossStartPoint; i < crossEndPoint; i++)
 				{
-					int valueInParent1 = parent1.at(i);
-					if (std::find(child1.begin(), child1.end(), valueInParent1) == child1.end())
-					{
-						child1[i] = valueInParent1;
-					}
+					child1[i] = parent2[i];
+					child2[i] = parent1[i];
 				}
 
-				if (child2.at(i) == 0)
+				// fill remaining values
+				for (int i = 0; i < citiesNumber; i++)
 				{
-					int valueInParent2 = parent2.at(i);
-					if (std::find(child2.begin(), child2.end(), valueInParent2) == child2.end())
+					if (child1.at(i) == 0)
 					{
-						child2[i] = valueInParent2;
-					}
-				}
-			}
-
-			// inserting values from model table
-			for (int i = 0; i < citiesNumber; i++)
-			{
-				if (child1.at(i) == 0)
-				{
-					int valueInParent1 = parent1.at(i);
-
-					while (true)
-					{
-						int indexInParent2 = std::distance(parent2.begin(), std::find(parent2.begin(), parent2.end(), valueInParent1));
-
-						int mappedTo = parent1.at(indexInParent2);
-
-						if (std::find(child1.begin(), child1.end(), mappedTo) == child1.end())
+						for (int j = 0; j < citiesNumber; j++)
 						{
-							child1[i] = mappedTo;
-							break;
-						}
-						else
-						{
-							valueInParent1 = mappedTo;
+							if (std::find(child1.begin(), child1.end(), parent2.at(j)) == child1.end())
+							{
+								child1[i] = parent2.at(j);
+							}
 						}
 					}
-				}
 
-				if (child2.at(i) == 0)
-				{
-					int valueInParent2 = parent2.at(i);
-
-					while (true)
+					if (child2.at(i) == 0)
 					{
-						int indexInParent1 = std::distance(parent1.begin(), std::find(parent1.begin(), parent1.end(), valueInParent2));
-
-						int mappedTo = parent2.at(indexInParent1);
-
-						if (std::find(child2.begin(), child2.end(), mappedTo) == child2.end())
+						for (int j = 0; j < citiesNumber; j++)
 						{
-							child2[i] = mappedTo;
-							break;
-						}
-						else
-						{
-							valueInParent2 = mappedTo;
+							if (std::find(child2.begin(), child2.end(), parent1.at(j)) == child2.end())
+							{
+								child2[i] = parent1.at(j);
+							}
 						}
 					}
 				}
 			}
-
-			modelTable.clear();
 		}
 
 		newPopulation.push_back(child1);
@@ -329,7 +359,7 @@ std::vector<std::vector<int>> crossoverPopulation(std::vector<std::vector<int>> 
 	return newPopulation;
 }
 
-std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> population, double mutationRatio, int populationSize)
+std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> population, double mutationRatio, int mutationType, int populationSize)
 {
 	std::mt19937_64 rng;
 	uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -338,29 +368,54 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> pop
 	std::uniform_real_distribution<double> unif(0, 1);
 
 	// Inversion
-	for (int i = 0; i < populationSize; i++)
+	if (mutationType == 1)
 	{
-		double mutationFactor = unif(rng);
-
-		for (int j = 0; j < citiesNumber; j++)
+		for (int i = 0; i < populationSize; i++)
 		{
-			if (mutationFactor < mutationRatio)
+			double mutationFactor = unif(rng);
+
+			for (int j = 0; j < citiesNumber; j++)
 			{
-				int mutationStartPoint = j;
-				int mutationEndPoint = rand() % citiesNumber + 1;
-
-				if (mutationStartPoint > mutationEndPoint) std::swap(mutationStartPoint, mutationEndPoint);
-
-				for (int k = mutationStartPoint; k < mutationEndPoint / 2; k++)
+				if (mutationFactor < mutationRatio)
 				{
-					std::swap(population[i][k], population[i][mutationEndPoint - k - 1]);
-				}
+					int mutationStartPoint = j;
+					int mutationEndPoint = rand() % citiesNumber + 1;
 
-				break;
+					if (mutationStartPoint > mutationEndPoint) std::swap(mutationStartPoint, mutationEndPoint);
+
+					for (int k = mutationStartPoint; k < mutationEndPoint / 2; k++)
+					{
+						std::swap(population[i][k], population[i][mutationEndPoint - k - 1]);
+					}
+
+					break;
+				}
 			}
 		}
 	}
 
+	// swap
+	if (mutationType == 2)
+	{
+		for (int i = 0; i < populationSize; i++)
+		{
+			double mutationFactor = unif(rng);
+
+			for (int j = 0; j < citiesNumber; j++)
+			{
+				if (mutationFactor < mutationRatio)
+				{
+					int mutationStartPoint = j;
+					int mutationEndPoint = rand() % citiesNumber;
+
+					std::swap(population[i][mutationStartPoint], population[i][mutationEndPoint]);
+
+					break;
+				}
+			}
+		}
+	}
+	
 	return population;
 }
 
@@ -380,6 +435,17 @@ int getRouteCost(std::vector<int> specimen, int** edgesMatrix, int citiesNumber)
 	totalCost += edgesMatrix[lastCityIndex][startingCityIndex];
 
 	return totalCost;
+}
+
+double averageInPopulation(std::vector<std::vector<int>> population)
+{
+	double avg = 0.0;
+	for (int i = 0; i < population.size(); i++)
+	{
+		avg += getRouteCost(population.at(i), edgesMatrix, citiesNumber);
+	}
+
+	return 1.0 * avg / population.size();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
