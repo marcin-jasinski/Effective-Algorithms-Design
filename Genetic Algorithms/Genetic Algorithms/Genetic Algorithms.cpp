@@ -43,14 +43,44 @@ int getRouteCost(std::vector<int>, int**, int);
 std::pair<std::vector<int>, int> getBestSpecimen(std::vector<std::vector<int>>);
 double averageInPopulation(std::vector<std::vector<int>>);
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// main
+
 int main()
 {
 	srand(time(NULL));
 
-	runGAbenchmarks();
+	edgesMatrix = readSymetricTSPData("TSP_Data/burma14.tsp");
+	correctSolution = 3323;
 
+	// edgesMatrix = readSymetricTSPData("TSP_Data/gr96.tsp");
+	// correctSolution = 55209;
+
+	int populationSize = 50;
+	int maxPopulations = 1000;
+	int crossoverType = 1;
+	double crossRatio = 0.6;
+	int mutationType = 1;
+	double mutationRatio = 0.1;
+
+	std::cout << "Starting genetic algorithm..." << std::endl; 
+
+	std::vector<std::vector<int>> population = runGeneticAlgorithm(populationSize, maxPopulations, crossoverType, crossRatio, mutationType, mutationRatio);
+
+	std::pair<std::vector<int>, int> bestSpecimen = getBestSpecimen(population);
+	int bestCost = bestSpecimen.second;
+	double error = ((bestSpecimen.second - correctSolution) * 100.0 / correctSolution);
+
+	std::cout << "Done!" << std::endl;
+	std::cout << "Best cost: " << bestCost << std::endl;
+	std::cout << "Error:     " << error << "%" << std::endl;
+	std::cout << "Best specimen: ";
+	printSpecimen(bestSpecimen.first);
 	return 0;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// genetic algorithm
 
 std::vector<std::vector<int>> runGeneticAlgorithm(int populationSize, int maxPopulations, int crossoverType, double crossoverRatio, int mutationType, double mutationRatio)
 {
@@ -346,10 +376,10 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> pop
 	{
 		for (int i = 0; i < populationSize; i++)
 		{
-			double mutationFactor = unif(rng);
-
 			for (int j = 0; j < citiesNumber; j++)
 			{
+				double mutationFactor = unif(rng);
+
 				if (mutationFactor < mutationRatio)
 				{
 					int mutationStartPoint = j;
@@ -373,10 +403,10 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> pop
 	{
 		for (int i = 0; i < populationSize; i++)
 		{
-			double mutationFactor = unif(rng);
-
 			for (int j = 0; j < citiesNumber; j++)
 			{
+				double mutationFactor = unif(rng);
+			
 				if (mutationFactor < mutationRatio)
 				{
 					int mutationStartPoint = j;
@@ -392,6 +422,9 @@ std::vector<std::vector<int>> mutatePopulation(std::vector<std::vector<int>> pop
 	
 	return population;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// utils
 
 int getRouteCost(std::vector<int> specimen, int** edgesMatrix, int citiesNumber)
 {
@@ -468,6 +501,9 @@ void printPath(std::vector<int> solution)
 
 	std::cout << solution.at(0) << std::endl;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// rading tsp files
 
 int** readAsymetricTSPData(std::string fileName)
 {
@@ -601,6 +637,9 @@ int TWOD_geo_distance(const Point a, const Point b)
 	return (int)RRR * std::acos(0.5 * ((1.0 + q1)*q2 - (1.0 - q1) * q3)) + 1.0;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// benchmarks
+
 void benchmarkGA(std::fstream &file, int correctSolution, int populationSize, int maxPopulations, int crossoverType, double crossoverRatio, int mutationType, double mutationRatio)
 {
 	std::vector<std::vector<int>> result;
@@ -663,6 +702,11 @@ void runInstanceBenchmarkSet(std::fstream &file, int correctSolution)
 
 void runCrossingRatioBenchmarkSet(std::fstream &file, int correctSolution)
 {
+	system("cls");
+	std::cout << "Cross ratio = 0.3" << std::endl;
+	file << "Cross_ratio,0.3" << std::endl;
+	benchmarkGA(file, correctSolution, 100, 500, 1, 0.3, 1, 0.1);
+
 	system("cls");
 	std::cout << "Cross ratio = 0.6" << std::endl;
 	file << "Cross_ratio,0.6" << std::endl; 
@@ -843,7 +887,7 @@ void runGAbenchmarks()
 
 		edgesMatrix = readSymetricTSPData("TSP_Data/gr96.tsp");
 		correctSolution = 55209;
-		runInstanceBenchmarkSet(geneticAlgorithm_TSP_Parameters, correctSolution);
+		runCrossingMutationTypesBenchmarkSet(geneticAlgorithm_TSP_Parameters, correctSolution);
 
 		geneticAlgorithm_TSP_Parameters.close();
 	}
